@@ -1,3 +1,4 @@
+
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
@@ -85,7 +86,7 @@ const policyScores = [
     status: "healthy",
     description: "Security compliance and deployment process validation scores."
   }
-] as const;
+]; // Removed 'as const' assertion
 
 const Index = () => {
   return (
