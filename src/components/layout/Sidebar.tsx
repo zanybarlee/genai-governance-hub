@@ -7,6 +7,8 @@ import {
   ShieldCheck,
   GitBranch,
   Bot,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 import {
   Sidebar,
@@ -21,6 +23,7 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import { useRole } from "@/contexts/RoleContext";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 const roleAccess = {
   superuser: ["dashboard", "policies", "compliance", "cicd", "settings", "agent"],
@@ -35,9 +38,14 @@ export const AppSidebar = () => {
   const location = useLocation();
   const { role } = useRole();
   const [showIframe, setShowIframe] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const hasAccess = (module: string) => {
     return role === "superuser" || roleAccess[role as keyof typeof roleAccess].includes(module);
+  };
+
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
   };
 
   return (
@@ -138,27 +146,47 @@ export const AppSidebar = () => {
       </Sidebar>
 
       {showIframe && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-lg w-[80vw] h-[80vh] relative">
-            <button
-              onClick={() => setShowIframe(false)}
-              className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+        <div className={`fixed inset-0 bg-black/50 z-50 flex items-center justify-center ${isFullscreen ? 'p-0' : 'p-8'}`}>
+          <div 
+            className={`bg-white rounded-lg shadow-lg relative ${
+              isFullscreen ? 'w-full h-full rounded-none' : 'w-[80vw] h-[80vh]'
+            }`}
+          >
+            <div className="absolute top-4 right-4 flex gap-2 z-10">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={toggleFullscreen}
+                className="p-2 hover:bg-gray-100 rounded-full"
               >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
+                {isFullscreen ? (
+                  <Minimize2 className="h-5 w-5" />
+                ) : (
+                  <Maximize2 className="h-5 w-5" />
+                )}
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setShowIframe(false)}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </Button>
+            </div>
             <iframe
               src="http://127.0.0.1:3000/canvas/36cfa13e-643c-4d07-8777-91f21e7157ca"
               className="w-full h-full rounded-lg"
