@@ -103,18 +103,6 @@ export const SidebarNavItems = ({
           </SidebarMenuButton>
         </SidebarMenuItem>
       )}
-      
-      {hasAccess("settings") && (
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            isActive={location.pathname === "/settings"}
-            onClick={() => navigate("/settings")}
-          >
-            <Settings className="h-4 w-4" />
-            <span>Settings</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      )}
 
       {hasAccess("agent") && (
         <SidebarMenuItem>
@@ -142,6 +130,18 @@ export const SidebarNavItems = ({
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+        </SidebarMenuItem>
+      )}
+      
+      {hasAccess("settings") && (
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            isActive={location.pathname === "/settings"}
+            onClick={() => navigate("/settings")}
+          >
+            <Settings className="h-4 w-4" />
+            <span>Settings</span>
+          </SidebarMenuButton>
         </SidebarMenuItem>
       )}
     </>
