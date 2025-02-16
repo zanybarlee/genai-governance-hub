@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RefreshCw, Send, MessageCircle, X } from "lucide-react";
+import { RefreshCw, Send, MessageCircle, X, Bot, User } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface Message {
   content: string;
@@ -125,10 +126,19 @@ export const ChatDialog = () => {
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`flex ${
-                  message.sender === 'user' ? 'justify-end' : 'justify-start'
+                className={`flex items-start gap-2 ${
+                  message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'
                 }`}
               >
+                <Avatar className="w-8 h-8">
+                  <AvatarFallback className={message.sender === 'user' ? 'bg-primary-100' : 'bg-blue-100'}>
+                    {message.sender === 'user' ? (
+                      <User className="h-4 w-4 text-primary-500" />
+                    ) : (
+                      <Bot className="h-4 w-4 text-blue-500" />
+                    )}
+                  </AvatarFallback>
+                </Avatar>
                 <div
                   className={`max-w-[80%] p-3 rounded-lg ${
                     message.sender === 'user'
@@ -144,7 +154,12 @@ export const ChatDialog = () => {
               </div>
             ))}
             {isLoading && (
-              <div className="flex justify-start">
+              <div className="flex items-start gap-2">
+                <Avatar className="w-8 h-8">
+                  <AvatarFallback className="bg-blue-100">
+                    <Bot className="h-4 w-4 text-blue-500" />
+                  </AvatarFallback>
+                </Avatar>
                 <div className="bg-gray-100 text-gray-800 p-3 rounded-lg">
                   <div className="flex space-x-2">
                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
