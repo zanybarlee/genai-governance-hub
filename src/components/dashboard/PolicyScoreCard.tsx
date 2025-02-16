@@ -19,9 +19,10 @@ interface PolicyScore {
 
 interface PolicyScoreCardProps {
   scores: PolicyScore[];
+  onPolicyClick?: (policy: PolicyScore) => void;
 }
 
-export const PolicyScoreCard = ({ scores }: PolicyScoreCardProps) => {
+export const PolicyScoreCard = ({ scores, onPolicyClick }: PolicyScoreCardProps) => {
   const getStatusColor = (status: PolicyScore["status"]) => {
     switch (status) {
       case "healthy":
@@ -57,10 +58,7 @@ export const PolicyScoreCard = ({ scores }: PolicyScoreCardProps) => {
           <div
             key={index}
             className="p-4 bg-gray-50 rounded-lg space-y-2 cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={() => {
-              // TODO: Handle click - will be implemented in next iteration
-              console.log("Clicked policy:", score.name);
-            }}
+            onClick={() => onPolicyClick?.(score)}
           >
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-2">

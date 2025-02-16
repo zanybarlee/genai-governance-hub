@@ -1,4 +1,3 @@
-
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
@@ -20,6 +19,9 @@ import {
   Legend,
 } from "recharts";
 import { Card } from "@/components/ui/card";
+import { PolicyDetailsDialog } from "@/components/policies/PolicyDetailsDialog";
+import { useState } from "react";
+import { Policy } from "@/types/policy";
 
 const complianceData = [
   { month: "Jan", score: 92 },
@@ -59,36 +61,59 @@ const cicdData = [
 
 const policyScores = [
   {
+    id: 1,
     name: "Trusted Development Policy",
     score: 97,
     lastUpdated: "2024-03-20 14:30",
     status: "healthy" as const,
-    description: "Automated testing and compliance scoring for development practices and standards."
+    description: "Automated testing and compliance scoring for development practices and standards.",
+    version: "1.0",
+    category: "Development"
   },
   {
+    id: 2,
     name: "Data Privacy & Ethics",
     score: 94,
     lastUpdated: "2024-03-20 14:15",
     status: "warning" as const,
-    description: "Monitoring of data handling practices and ethical guidelines adherence."
+    description: "Monitoring of data handling practices and ethical guidelines adherence.",
+    version: "1.1",
+    category: "Privacy"
   },
   {
+    id: 3,
     name: "Model Evaluation Framework",
     score: 98,
     lastUpdated: "2024-03-20 14:00",
     status: "healthy" as const,
-    description: "Assessment of model testing, validation, and performance metrics."
+    description: "Assessment of model testing, validation, and performance metrics.",
+    version: "1.0",
+    category: "Evaluation"
   },
   {
+    id: 4,
     name: "Deployment Security",
     score: 96,
     lastUpdated: "2024-03-20 13:45",
     status: "healthy" as const,
-    description: "Security compliance and deployment process validation scores."
+    description: "Security compliance and deployment process validation scores.",
+    version: "1.2",
+    category: "Security"
   }
 ];
 
 const Index = () => {
+  const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
+
+  const handlePolicyClick = (policy: typeof policyScores[0]) => {
+    const policyData: Policy = {
+      ...policy,
+      status: "Active",
+      content: "This is a sample content for " + policy.name + ". The actual content would be loaded from the backend."
+    };
+    setSelectedPolicy(policyData);
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gradient-to-br from-gray-50 to-gray-100">
@@ -312,7 +337,10 @@ const Index = () => {
                   </Card>
                 </div>
                 <div className="space-y-6">
-                  <PolicyScoreCard scores={policyScores} />
+                  <PolicyScoreCard 
+                    scores={policyScores} 
+                    onPolicyClick={handlePolicyClick}
+                  />
                   <ActivityFeed />
                 </div>
               </div>
@@ -321,6 +349,10 @@ const Index = () => {
         </div>
       </div>
       <ChatDialog />
+      <PolicyDetailsDialog
+        policy={selectedPolicy}
+        onClose={() => setSelectedPolicy(null)}
+      />
     </SidebarProvider>
   );
 };
