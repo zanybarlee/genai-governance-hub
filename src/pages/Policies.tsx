@@ -6,6 +6,61 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle, Filter, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@/components/ui/radio-group";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+
+interface PolicyTemplate {
+  id: string;
+  name: string;
+  description: string;
+  content: string;
+  category: string;
+}
+
+const policyTemplates: PolicyTemplate[] = [
+  {
+    id: "data-privacy",
+    name: "Data Privacy Policy",
+    description: "Template for organizational data privacy standards",
+    content: "# Data Privacy Policy\n\n## Purpose\nThis policy outlines...",
+    category: "Privacy",
+  },
+  {
+    id: "model-dev",
+    name: "Model Development Guidelines",
+    description: "Standards for AI model development and testing",
+    content: "# Model Development Guidelines\n\n## Overview\nThese guidelines...",
+    category: "Development",
+  },
+  {
+    id: "ethics",
+    name: "AI Ethics Framework",
+    description: "Framework for ethical AI development and deployment",
+    content: "# AI Ethics Framework\n\n## Principles\nOur ethical principles...",
+    category: "Ethics",
+  },
+];
 
 const policies = [
   {
@@ -34,7 +89,32 @@ const policies = [
   },
 ];
 
+interface PolicyFormValues {
+  name: string;
+  description: string;
+  template: string;
+  content: string;
+}
+
 const Policies = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const form = useForm<PolicyFormValues>();
+
+  const onTemplateSelect = (templateId: string) => {
+    const template = policyTemplates.find((t) => t.id === templateId);
+    if (template) {
+      form.setValue("name", template.name);
+      form.setValue("description", template.description);
+      form.setValue("content", template.content);
+    }
+  };
+
+  const onSubmit = (data: PolicyFormValues) => {
+    console.log("Creating new policy:", data);
+    setIsDialogOpen(false);
+    // Here we would typically save the policy to the backend
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gradient-to-br from-gray-50 to-gray-100">
@@ -50,10 +130,123 @@ const Policies = () => {
                     Manage and monitor your AI governance policies
                   </p>
                 </div>
-                <Button className="flex items-center gap-2">
-                  <PlusCircle className="h-5 w-5" />
-                  Create Policy
-                </Button>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="flex items-center gap-2">
+                      <PlusCircle className="h-5 w-5" />
+                      Create Policy
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Create New Policy</DialogTitle>
+                      <DialogDescription>
+                        Create a new policy from scratch or use a template
+                      </DialogDescription>
+                    </DialogHeader>
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        <FormField
+                          control={form.control}
+                          name="template"
+                          render={({ field }) => (
+                            <FormItem className="space-y-3">
+                              <FormLabel>Select a Template</FormLabel>
+                              <FormControl>
+                                <RadioGroup
+                                  onValueChange={(value) => {
+                                    field.onChange(value);
+                                    onTemplateSelect(value);
+                                  }}
+                                  className="grid grid-cols-3 gap-4"
+                                >
+                                  {policyTemplates.map((template) => (
+                                    <FormItem key={template.id}>
+                                      <FormControl>
+                                        <div className="relative">
+                                          <RadioGroupItem
+                                            value={template.id}
+                                            id={template.id}
+                                            className="absolute right-4 top-4 h-4 w-4"
+                                          />
+                                          <label
+                                            htmlFor={template.id}
+                                            className="block p-4 rounded-lg border cursor-pointer hover:border-primary transition-colors"
+                                          >
+                                            <h4 className="font-medium text-primary-900 mb-1">
+                                              {template.name}
+                                            </h4>
+                                            <p className="text-sm text-gray-600">
+                                              {template.description}
+                                            </p>
+                                          </label>
+                                        </div>
+                                      </FormControl>
+                                    </FormItem>
+                                  ))}
+                                </RadioGroup>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Policy Name</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description</FormLabel>
+                              <FormControl>
+                                <Textarea {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="content"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Policy Content</FormLabel>
+                              <FormControl>
+                                <Textarea {...field} className="min-h-[200px] font-mono" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <div className="flex justify-end gap-4">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setIsDialogOpen(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button type="submit">Create Policy</Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
               </div>
 
               <Card className="p-6 bg-white/50 backdrop-blur-lg">
