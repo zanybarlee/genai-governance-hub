@@ -25,13 +25,15 @@ interface SidebarNavItemsProps {
   setShowIframe: (show: boolean) => void;
   selectedUrl: string;
   setSelectedUrl: (url: string) => void;
+  isCollapsed: boolean;
 }
 
 export const SidebarNavItems = ({ 
   showIframe, 
   setShowIframe, 
   selectedUrl, 
-  setSelectedUrl 
+  setSelectedUrl,
+  isCollapsed 
 }: SidebarNavItemsProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -65,7 +67,7 @@ export const SidebarNavItems = ({
             onClick={() => navigate("/")}
           >
             <LayoutDashboard className="h-4 w-4" />
-            <span>Dashboard</span>
+            {!isCollapsed && <span>Dashboard</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
       )}
@@ -77,7 +79,7 @@ export const SidebarNavItems = ({
             onClick={() => navigate("/policies")}
           >
             <FileText className="h-4 w-4" />
-            <span>Policies</span>
+            {!isCollapsed && <span>Policies</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
       )}
@@ -89,7 +91,7 @@ export const SidebarNavItems = ({
             onClick={() => navigate("/compliance")}
           >
             <ShieldCheck className="h-4 w-4" />
-            <span>Compliance</span>
+            {!isCollapsed && <span>Compliance</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
       )}
@@ -101,7 +103,7 @@ export const SidebarNavItems = ({
             onClick={() => navigate("/cicd")}
           >
             <GitBranch className="h-4 w-4" />
-            <span>CI/CD</span>
+            {!isCollapsed && <span>CI/CD</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
       )}
@@ -114,8 +116,12 @@ export const SidebarNavItems = ({
                 isActive={showIframe}
               >
                 <Bot className="h-4 w-4" />
-                <span>AI Agent</span>
-                <ChevronDown className="h-4 w-4 ml-auto" />
+                {!isCollapsed && (
+                  <>
+                    <span>AI Agent</span>
+                    <ChevronDown className="h-4 w-4 ml-auto" />
+                  </>
+                )}
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 bg-white border border-gray-200 shadow-lg">
@@ -142,7 +148,7 @@ export const SidebarNavItems = ({
             onClick={() => window.open(monitoringUrl, '_blank')}
           >
             <LineChart className="h-4 w-4" />
-            <span>Monitoring</span>
+            {!isCollapsed && <span>Monitoring</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
       )}
@@ -154,7 +160,7 @@ export const SidebarNavItems = ({
             onClick={() => navigate("/settings")}
           >
             <Settings className="h-4 w-4" />
-            <span>Settings</span>
+            {!isCollapsed && <span>Settings</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
       )}
