@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Policy } from "@/types/policy";
-import { Archive, Edit, Trash, Check, X } from "lucide-react";
+import { Edit, Trash, Check, X } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -59,7 +59,6 @@ export const PolicyDetailsDialog = ({
         title: "Status Updated",
         description: `${policy.name} is now ${newStatus}.`,
       });
-      onClose();
     }
   };
 
