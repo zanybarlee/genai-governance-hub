@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RefreshCw, Send, MessageCircle, X, Bot, User } from "lucide-react";
+import { RefreshCw, Send, MessageCircle, Bot, User } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface Message {
   content: string;
@@ -22,7 +22,11 @@ export const ChatDialog = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [dimensions, setDimensions] = useState({ width: 425, height: 400 });
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const resizingRef = useRef(false);
+  const startPosRef = useRef({ x: 0, y: 0 });
+  const startDimensionsRef = useRef({ width: 425, height: 400 });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,6 +35,32 @@ export const ChatDialog = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    resizingRef.current = true;
+    startPosRef.current = { x: e.clientX, y: e.clientY };
+    startDimensionsRef.current = dimensions;
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!resizingRef.current) return;
+
+    const deltaX = e.clientX - startPosRef.current.x;
+    const deltaY = e.clientY - startPosRef.current.y;
+
+    setDimensions({
+      width: Math.max(375, startDimensionsRef.current.width + deltaX),
+      height: Math.max(300, startDimensionsRef.current.height + deltaY)
+    });
+  };
+
+  const handleMouseUp = () => {
+    resizingRef.current = false;
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  };
 
   const query = async (data: { question: string }) => {
     try {
@@ -94,82 +124,99 @@ export const ChatDialog = () => {
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <div className="flex justify-between items-center">
-              <DialogTitle>AI Assistant</DialogTitle>
-              <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleClear}
-                  className="hover:bg-gray-100"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                </Button>
+        <DialogContent 
+          className="p-0 overflow-hidden"
+          style={{ 
+            width: `${dimensions.width}px`, 
+            maxWidth: '90vw',
+            height: `${dimensions.height}px`,
+          }}
+        >
+          <div className="h-full flex flex-col">
+            <DialogHeader className="px-4 pt-4">
+              <div className="flex justify-between items-center">
+                <DialogTitle>AI Assistant</DialogTitle>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleClear}
+                    className="hover:bg-gray-100"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-            </div>
-          </DialogHeader>
+            </DialogHeader>
 
-          <div className="h-[400px] overflow-y-auto mb-4 space-y-4 p-2">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex items-start gap-2 ${
-                  message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'
-                }`}
-              >
-                <Avatar className="w-8 h-8">
-                  <AvatarFallback className={message.sender === 'user' ? 'bg-primary-100' : 'bg-blue-100'}>
-                    {message.sender === 'user' ? (
-                      <User className="h-4 w-4 text-primary-500" />
-                    ) : (
-                      <Bot className="h-4 w-4 text-blue-500" />
-                    )}
-                  </AvatarFallback>
-                </Avatar>
+            <div className="flex-1 overflow-y-auto mb-4 space-y-4 p-4">
+              {messages.map((message, index) => (
                 <div
-                  className={`max-w-[80%] p-3 rounded-lg ${
-                    message.sender === 'user'
-                      ? 'bg-primary-500 text-white'
-                      : 'bg-gray-100 text-gray-800'
+                  key={index}
+                  className={`flex items-start gap-2 ${
+                    message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'
                   }`}
                 >
-                  <p className="text-sm">{message.content}</p>
-                </div>
-              </div>
-            ))}
-            {isLoading && (
-              <div className="flex items-start gap-2">
-                <Avatar className="w-8 h-8">
-                  <AvatarFallback className="bg-blue-100">
-                    <Bot className="h-4 w-4 text-blue-500" />
-                  </AvatarFallback>
-                </Avatar>
-                <div className="bg-gray-100 text-gray-800 p-3 rounded-lg">
-                  <div className="flex space-x-2">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
+                  <Avatar className="w-8 h-8">
+                    <AvatarFallback className={message.sender === 'user' ? 'bg-primary-100' : 'bg-blue-100'}>
+                      {message.sender === 'user' ? (
+                        <User className="h-4 w-4 text-primary-500" />
+                      ) : (
+                        <Bot className="h-4 w-4 text-blue-500" />
+                      )}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div
+                    className={`max-w-[80%] p-3 rounded-lg ${
+                      message.sender === 'user'
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
+                    <p className="text-sm">{message.content}</p>
                   </div>
                 </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+              ))}
+              {isLoading && (
+                <div className="flex items-start gap-2">
+                  <Avatar className="w-8 h-8">
+                    <AvatarFallback className="bg-blue-100">
+                      <Bot className="h-4 w-4 text-blue-500" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="bg-gray-100 text-gray-800 p-3 rounded-lg">
+                    <div className="flex space-x-2">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
 
-          <form onSubmit={handleSubmit} className="flex gap-2">
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your message..."
-              disabled={isLoading}
-              className="flex-1"
+            <form onSubmit={handleSubmit} className="flex gap-2 p-4 border-t">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type your message..."
+                disabled={isLoading}
+                className="flex-1"
+              />
+              <Button type="submit" disabled={isLoading}>
+                <Send className="h-4 w-4" />
+              </Button>
+            </form>
+
+            <div 
+              className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
+              onMouseDown={handleMouseDown}
+              style={{
+                background: 'linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.1) 50%)',
+              }}
             />
-            <Button type="submit" disabled={isLoading}>
-              <Send className="h-4 w-4" />
-            </Button>
-          </form>
+          </div>
         </DialogContent>
       </Dialog>
     </>
