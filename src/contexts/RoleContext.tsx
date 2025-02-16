@@ -1,7 +1,6 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
-
-type Role = "superuser" | "admin" | "developer" | "auditor" | "manager";
+import { Role } from "@/constants/roleAccess";
 
 interface RoleContextType {
   role: Role;
@@ -11,8 +10,8 @@ interface RoleContextType {
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
-  // Initialize with auditor role to ensure access to AI Agent
-  const [role, setRole] = useState<Role>("auditor");
+  // Initialize with viewer role as it has basic access
+  const [role, setRole] = useState<Role>("viewer");
 
   return (
     <RoleContext.Provider value={{ role, setRole }}>
