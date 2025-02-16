@@ -40,18 +40,23 @@ export const PolicyDetailsDialog = ({
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const { toast } = useToast();
 
-  const handleDelete = () => {
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (policy && onDelete) {
       onDelete(policy);
       toast({
         title: "Policy Deleted",
         description: `${policy.name} has been deleted.`,
       });
+      setShowDeleteAlert(false);
       onClose();
     }
   };
 
-  const handleStatusChange = () => {
+  const handleStatusChange = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (policy && onStatusChange) {
       const newStatus = policy.status === "Active" ? "Under Review" : "Active";
       onStatusChange(policy, newStatus);
@@ -62,17 +67,31 @@ export const PolicyDetailsDialog = ({
     }
   };
 
-  const handleEdit = () => {
+  const handleEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (policy && onEdit) {
       onEdit(policy);
-      onClose();
     }
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowDeleteAlert(true);
   };
 
   return (
     <>
-      <Dialog open={!!policy} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="max-w-4xl">
+      <Dialog open={!!policy} onOpenChange={(open) => {
+        if (!open && !showDeleteAlert) {
+          onClose();
+        }
+      }}>
+        <DialogContent 
+          className="max-w-4xl"
+          onClick={(e) => e.stopPropagation()}
+        >
           <DialogHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -113,7 +132,7 @@ export const PolicyDetailsDialog = ({
                   variant="destructive"
                   size="sm"
                   className="flex items-center gap-2"
-                  onClick={() => setShowDeleteAlert(true)}
+                  onClick={handleDeleteClick}
                 >
                   <Trash className="h-4 w-4" />
                   Delete
@@ -148,7 +167,12 @@ export const PolicyDetailsDialog = ({
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
+      <AlertDialog 
+        open={showDeleteAlert} 
+        onOpenChange={(open) => {
+          setShowDeleteAlert(open);
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Policy</AlertDialogTitle>
@@ -157,7 +181,12 @@ export const PolicyDetailsDialog = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={(e) => {
+              e.stopPropagation();
+              setShowDeleteAlert(false);
+            }}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
