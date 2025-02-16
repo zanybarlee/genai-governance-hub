@@ -62,31 +62,31 @@ const policyScores = [
     name: "Trusted Development Policy",
     score: 97,
     lastUpdated: "2024-03-20 14:30",
-    status: "healthy",
+    status: "healthy" as const,
     description: "Automated testing and compliance scoring for development practices and standards."
   },
   {
     name: "Data Privacy & Ethics",
     score: 94,
     lastUpdated: "2024-03-20 14:15",
-    status: "warning",
+    status: "warning" as const,
     description: "Monitoring of data handling practices and ethical guidelines adherence."
   },
   {
     name: "Model Evaluation Framework",
     score: 98,
     lastUpdated: "2024-03-20 14:00",
-    status: "healthy",
+    status: "healthy" as const,
     description: "Assessment of model testing, validation, and performance metrics."
   },
   {
     name: "Deployment Security",
     score: 96,
     lastUpdated: "2024-03-20 13:45",
-    status: "healthy",
+    status: "healthy" as const,
     description: "Security compliance and deployment process validation scores."
   }
-]; // Removed 'as const' assertion
+];
 
 const Index = () => {
   return (
