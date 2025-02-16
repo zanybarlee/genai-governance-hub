@@ -1,49 +1,82 @@
-
-import { Home, Book, Shield, Activity, Users, Settings } from "lucide-react";
-import { Link } from "react-router-dom";
+import {
+  LayoutDashboard,
+  FileText,
+  Settings,
+  HelpCircle,
+  ShieldCheck,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
-  SidebarGroupContent,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const menuItems = [
-  { icon: Home, label: "Dashboard", href: "/" },
-  { icon: Book, label: "Policies", href: "/policies" },
-  { icon: Shield, label: "Compliance", href: "/compliance" },
-  { icon: Activity, label: "Monitoring", href: "/monitoring" },
-  { icon: Users, label: "Users", href: "/users" },
-  { icon: Settings, label: "Settings", href: "/settings" },
-];
+export const AppSidebar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-export function AppSidebar() {
   return (
     <Sidebar>
+      <SidebarHeader>
+        <img src="/placeholder.svg" alt="Logo" className="h-6" />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton asChild>
-                    <Link
-                      to={item.href}
-                      className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                      <item.icon className="h-5 w-5" />
-                      <span>{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                active={location.pathname === "/"}
+                onClick={() => navigate("/")}
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                <span>Dashboard</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                active={location.pathname === "/policies"}
+                onClick={() => navigate("/policies")}
+              >
+                <FileText className="h-4 w-4" />
+                <span>Policies</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                active={location.pathname === "/compliance"}
+                onClick={() => navigate("/compliance")}
+              >
+                <ShieldCheck className="h-4 w-4" />
+                <span>Compliance</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton>
+                <Settings className="h-4 w-4" />
+                <span>Settings</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarGroup>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton>
+                <HelpCircle className="h-4 w-4" />
+                <span>Help</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarFooter>
     </Sidebar>
   );
-}
+};
