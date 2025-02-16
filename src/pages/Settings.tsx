@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { CheckCircle2, XCircle, LoaderCircle } from "lucide-react";
 
@@ -27,6 +27,33 @@ const Settings = () => {
     security: "pending",
     deployment: "failed",
   });
+  const [selectedStage, setSelectedStage] = useState<string | null>(null);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+
+  // Simulate real-time updates
+  useEffect(() => {
+    if (!autoRefresh) return;
+
+    const interval = setInterval(() => {
+      // Simulate status changes
+      const stages = ['linting', 'testing', 'security', 'deployment'];
+      const statuses = ['success', 'running', 'pending', 'failed'];
+      const randomStage = stages[Math.floor(Math.random() * stages.length)];
+      const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+
+      setPipelineStatus(prev => ({
+        ...prev,
+        [randomStage]: randomStatus
+      }));
+
+      toast({
+        title: "Pipeline Update",
+        description: `${randomStage.charAt(0).toUpperCase() + randomStage.slice(1)} stage is now ${randomStatus}`,
+      });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [autoRefresh, toast]);
 
   const handleSaveGitHub = () => {
     toast({
@@ -40,6 +67,52 @@ const Settings = () => {
       title: "Role Updated",
       description: "The user role has been updated successfully.",
     });
+  };
+
+  const getStageDetails = (stage: string) => {
+    const details = {
+      linting: {
+        description: "Static code analysis and style checking",
+        command: "npm run lint",
+        duration: "45 seconds",
+        logs: [
+          "Checking code style...",
+          "Analyzing imports...",
+          "Verifying formatting...",
+        ],
+      },
+      testing: {
+        description: "Running unit and integration tests",
+        command: "npm run test",
+        duration: "2 minutes",
+        logs: [
+          "Running unit tests...",
+          "Testing API endpoints...",
+          "Generating coverage report...",
+        ],
+      },
+      security: {
+        description: "Security vulnerability scanning",
+        command: "npm audit",
+        duration: "1 minute",
+        logs: [
+          "Scanning dependencies...",
+          "Checking for vulnerabilities...",
+          "Analyzing security rules...",
+        ],
+      },
+      deployment: {
+        description: "Deploying to production environment",
+        command: "npm run deploy",
+        duration: "3 minutes",
+        logs: [
+          "Building production bundle...",
+          "Uploading assets...",
+          "Updating configuration...",
+        ],
+      },
+    };
+    return details[stage as keyof typeof details];
   };
 
   const PipelineStep = ({ status, label }: { status: string; label: string }) => {
@@ -74,7 +147,10 @@ const Settings = () => {
     };
 
     return (
-      <div className="flex flex-col items-center space-y-2">
+      <div 
+        className="flex flex-col items-center space-y-2 cursor-pointer hover:opacity-80 transition-opacity"
+        onClick={() => setSelectedStage(label.toLowerCase())}
+      >
         <div className={`p-3 rounded-full ${getStatusColor()}`}>
           {getIcon()}
         </div>
@@ -128,7 +204,15 @@ const Settings = () => {
 
                   <Card>
                     <CardHeader>
-                      <CardTitle>Pipeline Status</CardTitle>
+                      <CardTitle className="flex justify-between items-center">
+                        <span>Pipeline Status</span>
+                        <Button
+                          variant="outline"
+                          onClick={() => setAutoRefresh(!autoRefresh)}
+                        >
+                          {autoRefresh ? "Pause Updates" : "Resume Updates"}
+                        </Button>
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="py-6">
@@ -142,28 +226,101 @@ const Settings = () => {
                           <PipelineStep status={pipelineStatus.deployment} label="Deployment" />
                         </div>
                       </div>
+
+                      {selectedStage && (
+                        <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+                          <h3 className="text-lg font-semibold capitalize mb-4">
+                            {selectedStage} Details
+                          </h3>
+                          <div className="space-y-4">
+                            <div>
+                              <p className="text-sm text-gray-600">
+                                {getStageDetails(selectedStage).description}
+                              </p>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <p className="text-sm font-medium">Command</p>
+                                <code className="text-sm bg-gray-100 px-2 py-1 rounded">
+                                  {getStageDetails(selectedStage).command}
+                                </code>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">Duration</p>
+                                <p className="text-sm text-gray-600">
+                                  {getStageDetails(selectedStage).duration}
+                                </p>
+                              </div>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium mb-2">Logs</p>
+                              <div className="bg-gray-900 text-gray-100 p-3 rounded text-sm font-mono">
+                                {getStageDetails(selectedStage).logs.map((log, index) => (
+                                  <div key={index} className="py-1">
+                                    {log}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
 
                   <Card>
                     <CardHeader>
-                      <CardTitle>Automated Testing</CardTitle>
+                      <CardTitle>Pipeline Configuration</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium">
-                          Test Pipeline Configuration
-                        </label>
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select test runner" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="jest">Jest</SelectItem>
-                            <SelectItem value="mocha">Mocha</SelectItem>
-                            <SelectItem value="cypress">Cypress</SelectItem>
-                          </SelectContent>
-                        </Select>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <label className="block text-sm font-medium">
+                            Test Runner
+                          </label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select test runner" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="jest">Jest</SelectItem>
+                              <SelectItem value="mocha">Mocha</SelectItem>
+                              <SelectItem value="cypress">Cypress</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <label className="block text-sm font-medium">
+                            Build Environment
+                          </label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select environment" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="node16">Node.js 16</SelectItem>
+                              <SelectItem value="node18">Node.js 18</SelectItem>
+                              <SelectItem value="node20">Node.js 20</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="block text-sm font-medium">
+                            Deployment Target
+                          </label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select target" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="production">Production</SelectItem>
+                              <SelectItem value="staging">Staging</SelectItem>
+                              <SelectItem value="development">Development</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
