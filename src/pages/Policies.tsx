@@ -73,6 +73,23 @@ const Policies = () => {
     });
   };
 
+  const handleDeletePolicy = (policy: Policy) => {
+    setPolicies(policies.filter(p => p.id !== policy.id));
+  };
+
+  const handleStatusChange = (policy: Policy, newStatus: "Active" | "Under Review") => {
+    setPolicies(policies.map(p => 
+      p.id === policy.id 
+        ? { ...p, status: newStatus, lastUpdated: new Date().toISOString().split('T')[0] }
+        : p
+    ));
+  };
+
+  const handleEditPolicy = (policy: Policy) => {
+    // To be implemented in future updates
+    console.log("Edit policy:", policy);
+  };
+
   const filteredPolicies = policies.filter((policy) =>
     policy.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     policy.category.toLowerCase().includes(searchQuery.toLowerCase())
@@ -130,6 +147,9 @@ const Policies = () => {
               <PolicyDetailsDialog
                 policy={selectedPolicy}
                 onClose={() => setSelectedPolicy(null)}
+                onDelete={handleDeletePolicy}
+                onStatusChange={handleStatusChange}
+                onEdit={handleEditPolicy}
               />
             </div>
           </main>
