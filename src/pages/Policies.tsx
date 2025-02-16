@@ -1,9 +1,8 @@
-
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Filter, Search } from "lucide-react";
+import { PlusCircle, Filter, Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import {
@@ -62,7 +61,18 @@ const policyTemplates: PolicyTemplate[] = [
   },
 ];
 
-const policies = [
+interface Policy {
+  id: number;
+  name: string;
+  version: string;
+  status: "Active" | "Under Review";
+  lastUpdated: string;
+  category: string;
+  description?: string;
+  content?: string;
+}
+
+const policies: Policy[] = [
   {
     id: 1,
     name: "Data Privacy Policy",
@@ -70,6 +80,8 @@ const policies = [
     status: "Active",
     lastUpdated: "2024-03-15",
     category: "Privacy",
+    description: "Comprehensive data privacy guidelines for AI systems",
+    content: "# Data Privacy Policy\n\nThis policy outlines the requirements for handling data in AI systems...",
   },
   {
     id: 2,
@@ -78,6 +90,8 @@ const policies = [
     status: "Under Review",
     lastUpdated: "2024-03-14",
     category: "Development",
+    description: "Guidelines for developing and deploying AI models",
+    content: "# Model Development Guidelines\n\nThese guidelines ensure consistent and secure AI model development...",
   },
   {
     id: 3,
@@ -86,6 +100,8 @@ const policies = [
     status: "Active",
     lastUpdated: "2024-03-10",
     category: "Ethics",
+    description: "Framework for ethical AI development and deployment",
+    content: "# AI Ethics Framework\n\nOur ethical principles for AI development and deployment...",
   },
 ];
 
@@ -98,6 +114,8 @@ interface PolicyFormValues {
 
 const Policies = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const form = useForm<PolicyFormValues>();
 
   const onTemplateSelect = (templateId: string) => {
@@ -112,8 +130,12 @@ const Policies = () => {
   const onSubmit = (data: PolicyFormValues) => {
     console.log("Creating new policy:", data);
     setIsDialogOpen(false);
-    // Here we would typically save the policy to the backend
   };
+
+  const filteredPolicies = policies.filter((policy) =>
+    policy.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    policy.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <SidebarProvider>
@@ -256,7 +278,17 @@ const Policies = () => {
                     <Input
                       placeholder="Search policies..."
                       className="pl-10"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                     />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery("")}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    )}
                   </div>
                   <Button variant="outline" className="flex items-center gap-2">
                     <Filter className="h-4 w-4" />
@@ -276,10 +308,11 @@ const Policies = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {policies.map((policy) => (
+                      {filteredPolicies.map((policy) => (
                         <tr
                           key={policy.id}
-                          className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                          className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
+                          onClick={() => setSelectedPolicy(policy)}
                         >
                           <td className="py-3 px-4">
                             <span className="font-medium text-primary-900">{policy.name}</span>
@@ -304,6 +337,44 @@ const Policies = () => {
                   </table>
                 </div>
               </Card>
+
+              <Dialog open={!!selectedPolicy} onOpenChange={(open) => !open && setSelectedPolicy(null)}>
+                <DialogContent className="max-w-4xl">
+                  <DialogHeader>
+                    <DialogTitle>{selectedPolicy?.name}</DialogTitle>
+                    <DialogDescription>
+                      Version {selectedPolicy?.version} • {selectedPolicy?.category}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-1">Description</h4>
+                      <p className="text-gray-600">{selectedPolicy?.description}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-1">Content</h4>
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <pre className="whitespace-pre-wrap font-mono text-sm">
+                          {selectedPolicy?.content}
+                        </pre>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="text-sm text-gray-600">
+                          Last updated: {selectedPolicy?.lastUpdated}
+                        </span>
+                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => setSelectedPolicy(null)}
+                      >
+                        Close
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </main>
         </div>
