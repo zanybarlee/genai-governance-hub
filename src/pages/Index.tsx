@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
+import { ChatDialog } from "@/components/chat/ChatDialog";
 import { Shield, Book, Users, AlertTriangle, GitBranch } from "lucide-react";
 import {
   AreaChart,
@@ -278,7 +279,10 @@ const Index = () => {
                     </div>
                   </Card>
                 </div>
-                <ActivityFeed />
+                <div className="space-y-6">
+                  <ActivityFeed />
+                  <ChatDialog />
+                </div>
               </div>
             </div>
           </main>
