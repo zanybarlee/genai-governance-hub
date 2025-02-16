@@ -116,7 +116,7 @@ export const SidebarNavItems = ({
                 <ChevronDown className="h-4 w-4 ml-auto" />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
+            <DropdownMenuContent className="w-56 bg-white border border-gray-200 shadow-lg">
               {agentUrls.map((agent) => (
                 <DropdownMenuItem
                   key={agent.url}
@@ -124,6 +124,7 @@ export const SidebarNavItems = ({
                     setSelectedUrl(agent.url);
                     setShowIframe(true);
                   }}
+                  className="hover:bg-gray-100"
                 >
                   {agent.name}
                 </DropdownMenuItem>
