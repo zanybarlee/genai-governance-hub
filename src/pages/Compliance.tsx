@@ -10,6 +10,7 @@ import { useState } from "react";
 import { ReportConfigDialog } from "@/components/compliance/ReportConfigDialog";
 import { ReportGeneratedDialog } from "@/components/compliance/ReportGeneratedDialog";
 import { ReportsSection } from "@/components/compliance/ReportsSection";
+import { ReportHistoryTables } from "@/components/compliance/ReportHistoryTables";
 import {
   Dialog,
   DialogContent,
@@ -190,8 +191,9 @@ const Compliance = () => {
 
               {/* Main Content Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
+                <div className="lg:col-span-2 space-y-6">
                   <ActivityFeed />
+                  <ReportHistoryTables />
                 </div>
 
                 {/* Reports & Actions */}
