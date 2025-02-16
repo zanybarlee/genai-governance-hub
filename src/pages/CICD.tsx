@@ -313,10 +313,10 @@ const CICD = () => {
                         Test Runner
                       </label>
                       <Select>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-white">
                           <SelectValue placeholder="Select test runner" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white z-50">
                           <SelectItem value="jest">Jest</SelectItem>
                           <SelectItem value="mocha">Mocha</SelectItem>
                           <SelectItem value="cypress">Cypress</SelectItem>
@@ -329,10 +329,10 @@ const CICD = () => {
                         Build Environment
                       </label>
                       <Select>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-white">
                           <SelectValue placeholder="Select environment" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white z-50">
                           <SelectItem value="node16">Node.js 16</SelectItem>
                           <SelectItem value="node18">Node.js 18</SelectItem>
                           <SelectItem value="node20">Node.js 20</SelectItem>
@@ -345,10 +345,10 @@ const CICD = () => {
                         Deployment Target
                       </label>
                       <Select>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-white">
                           <SelectValue placeholder="Select target" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white z-50">
                           <SelectItem value="production">Production</SelectItem>
                           <SelectItem value="staging">Staging</SelectItem>
                           <SelectItem value="development">Development</SelectItem>
