@@ -1,4 +1,3 @@
-
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
@@ -11,6 +10,13 @@ import { useState } from "react";
 import { ReportConfigDialog } from "@/components/compliance/ReportConfigDialog";
 import { ReportGeneratedDialog } from "@/components/compliance/ReportGeneratedDialog";
 import { ReportsSection } from "@/components/compliance/ReportsSection";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface ReportConfig {
   startDate: Date;
@@ -23,6 +29,56 @@ interface ReportConfig {
     recommendations: boolean;
   };
 }
+
+interface Alert {
+  id: string;
+  title: string;
+  description: string;
+  timestamp: string;
+  severity: 'high' | 'medium' | 'low';
+  impact: string;
+  recommendations: string[];
+  affectedSystems: string[];
+}
+
+const alerts: Alert[] = [
+  {
+    id: "1",
+    title: "Policy Breach Alert",
+    description: "Data privacy policy violation detected in AI Model X",
+    timestamp: "2 hours ago",
+    severity: "high",
+    impact: "Potential exposure of sensitive data patterns in model outputs",
+    recommendations: [
+      "Review model training data for sensitive information",
+      "Implement additional data sanitization steps",
+      "Update data privacy compliance checks"
+    ],
+    affectedSystems: [
+      "AI Model X",
+      "Data Processing Pipeline",
+      "Output Validation System"
+    ]
+  },
+  {
+    id: "2",
+    title: "Performance Alert",
+    description: "Model accuracy dropped below threshold",
+    timestamp: "5 hours ago",
+    severity: "medium",
+    impact: "Reduced prediction accuracy affecting service quality",
+    recommendations: [
+      "Analyze recent model inputs for anomalies",
+      "Review model retraining schedule",
+      "Check for data drift patterns"
+    ],
+    affectedSystems: [
+      "Model Performance Monitoring",
+      "Prediction Service",
+      "Quality Assurance System"
+    ]
+  }
+];
 
 const defaultConfig: ReportConfig = {
   startDate: new Date(new Date().setMonth(new Date().getMonth() - 1)),
@@ -48,6 +104,7 @@ const Compliance = () => {
     date: string;
     size: string;
   } | null>(null);
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
 
   const openReportConfig = (type: 'monthly' | 'audit') => {
     setReportType(type);
@@ -150,20 +207,19 @@ const Compliance = () => {
                       <CardTitle>Recent Alerts</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="border rounded-lg p-4 bg-warning/10 border-warning">
-                        <p className="text-sm font-medium text-warning">Policy Breach Alert</p>
-                        <p className="text-sm text-gray-600 mt-1">
-                          Data privacy policy violation detected in AI Model X
-                        </p>
-                        <p className="text-xs text-gray-500 mt-2">2 hours ago</p>
-                      </div>
-                      <div className="border rounded-lg p-4 bg-warning/10 border-warning">
-                        <p className="text-sm font-medium text-warning">Performance Alert</p>
-                        <p className="text-sm text-gray-600 mt-1">
-                          Model accuracy dropped below threshold
-                        </p>
-                        <p className="text-xs text-gray-500 mt-2">5 hours ago</p>
-                      </div>
+                      {alerts.map((alert) => (
+                        <div
+                          key={alert.id}
+                          className="border rounded-lg p-4 bg-warning/10 border-warning cursor-pointer hover:bg-warning/20 transition-colors"
+                          onClick={() => setSelectedAlert(alert)}
+                        >
+                          <p className="text-sm font-medium text-warning">{alert.title}</p>
+                          <p className="text-sm text-gray-600 mt-1">
+                            {alert.description}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-2">{alert.timestamp}</p>
+                        </div>
+                      ))}
                     </CardContent>
                   </Card>
                 </div>
@@ -188,6 +244,70 @@ const Compliance = () => {
         report={currentReport}
         onDownload={downloadReport}
       />
+
+      {/* Alert Details Dialog */}
+      <Dialog open={!!selectedAlert} onOpenChange={(open) => !open && setSelectedAlert(null)}>
+        <DialogContent className="sm:max-w-[600px]">
+          {selectedAlert && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-warning" />
+                  <DialogTitle>{selectedAlert.title}</DialogTitle>
+                </div>
+                <DialogDescription>
+                  Reported {selectedAlert.timestamp}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">Description</h4>
+                  <p className="text-sm">{selectedAlert.description}</p>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">Severity</h4>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    selectedAlert.severity === 'high' ? 'bg-red-100 text-red-800' :
+                    selectedAlert.severity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-green-100 text-green-800'
+                  }`}>
+                    {selectedAlert.severity.charAt(0).toUpperCase() + selectedAlert.severity.slice(1)}
+                  </span>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">Impact</h4>
+                  <p className="text-sm">{selectedAlert.impact}</p>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">Affected Systems</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedAlert.affectedSystems.map((system, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+                      >
+                        {system}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">Recommendations</h4>
+                  <ul className="list-disc pl-4 space-y-1">
+                    {selectedAlert.recommendations.map((recommendation, index) => (
+                      <li key={index} className="text-sm">{recommendation}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   );
 };
