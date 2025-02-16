@@ -8,6 +8,7 @@ import Index from "@/pages/Index";
 import NotFound from "@/pages/NotFound";
 import Policies from "@/pages/Policies";
 import Compliance from "@/pages/Compliance";
+import Settings from "@/pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ function App() {
             <Route path="/" element={<Index />} />
             <Route path="/policies" element={<Policies />} />
             <Route path="/compliance" element={<Compliance />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />

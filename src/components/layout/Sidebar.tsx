@@ -58,7 +58,10 @@ export const AppSidebar = () => {
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton>
+              <SidebarMenuButton
+                isActive={location.pathname === "/settings"}
+                onClick={() => navigate("/settings")}
+              >
                 <Settings className="h-4 w-4" />
                 <span>Settings</span>
               </SidebarMenuButton>
