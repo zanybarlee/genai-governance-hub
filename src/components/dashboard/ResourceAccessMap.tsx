@@ -1,12 +1,13 @@
 
 import { Card } from "@/components/ui/card";
-import { Database, Link, Shield, File, Server } from "lucide-react";
+import { Database, Link, Shield, File, Server, ChevronDown, ChevronUp } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
 
 interface ResourceAccess {
   id: string;
@@ -88,6 +89,12 @@ const getStatusColor = (status: string) => {
 };
 
 export const ResourceAccessMap = () => {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const toggleExpand = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
   return (
     <Card className="p-6 bg-white/50 backdrop-blur-lg border border-gray-100">
       <div className="flex justify-between items-center mb-6">
@@ -108,7 +115,8 @@ export const ResourceAccessMap = () => {
         {resources.map((resource) => (
           <div
             key={resource.id}
-            className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+            onClick={() => toggleExpand(resource.id)}
           >
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-3">
@@ -120,16 +128,14 @@ export const ResourceAccessMap = () => {
                     <h4 className="font-medium text-primary-900">
                       {resource.name}
                     </h4>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Badge variant="secondary" className="text-xs">
-                          {resource.type}
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-white border border-gray-200 shadow-lg">
-                        <p className="text-sm text-gray-600">{resource.description}</p>
-                      </TooltipContent>
-                    </Tooltip>
+                    <Badge variant="secondary" className="text-xs">
+                      {resource.type}
+                    </Badge>
+                    {expandedId === resource.id ? (
+                      <ChevronUp className="h-4 w-4 text-gray-500" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-gray-500" />
+                    )}
                   </div>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {resource.governanceRules.map((rule) => (
@@ -144,6 +150,30 @@ export const ResourceAccessMap = () => {
                 </div>
               </div>
             </div>
+            
+            {expandedId === resource.id && (
+              <div className="mt-4 pl-8 border-t pt-4">
+                <div className="space-y-3">
+                  <div>
+                    <h5 className="text-sm font-medium text-gray-700">Description</h5>
+                    <p className="text-sm text-gray-600 mt-1">{resource.description}</p>
+                  </div>
+                  <div>
+                    <h5 className="text-sm font-medium text-gray-700">Governance Details</h5>
+                    <div className="mt-2 space-y-2">
+                      {resource.governanceRules.map((rule) => (
+                        <div key={rule.id} className="flex items-center justify-between bg-white p-2 rounded-md">
+                          <span className="text-sm text-gray-600">{rule.name}</span>
+                          <Badge className={`${getStatusColor(rule.status)}`}>
+                            {rule.status}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>
