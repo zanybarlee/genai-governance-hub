@@ -5,6 +5,7 @@ import {
   Settings,
   HelpCircle,
   ShieldCheck,
+  GitBranch,
 } from "lucide-react";
 import {
   Sidebar,
@@ -55,6 +56,15 @@ export const AppSidebar = () => {
               >
                 <ShieldCheck className="h-4 w-4" />
                 <span>Compliance</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                isActive={location.pathname === "/cicd"}
+                onClick={() => navigate("/cicd")}
+              >
+                <GitBranch className="h-4 w-4" />
+                <span>CI/CD</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
