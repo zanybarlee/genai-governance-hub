@@ -1,5 +1,5 @@
 
-import { HelpCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { HelpCircle, ChevronsLeft, ChevronsRight } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -43,9 +43,9 @@ export const AppSidebar = () => {
                 <CollapsibleTrigger asChild>
                   <button className="p-2 hover:bg-gray-100 rounded-lg">
                     {isCollapsed ? (
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronsRight className="h-4 w-4 text-gray-600" />
                     ) : (
-                      <ChevronLeft className="h-4 w-4" />
+                      <ChevronsLeft className="h-4 w-4 text-gray-600" />
                     )}
                   </button>
                 </CollapsibleTrigger>
