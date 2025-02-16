@@ -41,12 +41,16 @@ export const AppSidebar = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const hasAccess = (module: string) => {
-    return role === "superuser" || roleAccess[role as keyof typeof roleAccess].includes(module);
+    const hasAccess = role === "superuser" || roleAccess[role as keyof typeof roleAccess].includes(module);
+    console.log(`Checking access for ${role} to ${module}: ${hasAccess}`);
+    return hasAccess;
   };
 
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
   };
+
+  console.log('Current role:', role);
 
   return (
     <>

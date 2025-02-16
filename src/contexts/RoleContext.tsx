@@ -11,7 +11,8 @@ interface RoleContextType {
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<Role>("developer");
+  // Initialize with auditor role to ensure access to AI Agent
+  const [role, setRole] = useState<Role>("auditor");
 
   return (
     <RoleContext.Provider value={{ role, setRole }}>
