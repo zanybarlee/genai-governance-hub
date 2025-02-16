@@ -1,3 +1,4 @@
+
 import {
   LayoutDashboard,
   FileText,
@@ -31,7 +32,7 @@ export const AppSidebar = () => {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
-                active={location.pathname === "/"}
+                isActive={location.pathname === "/"}
                 onClick={() => navigate("/")}
               >
                 <LayoutDashboard className="h-4 w-4" />
@@ -40,7 +41,7 @@ export const AppSidebar = () => {
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton
-                active={location.pathname === "/policies"}
+                isActive={location.pathname === "/policies"}
                 onClick={() => navigate("/policies")}
               >
                 <FileText className="h-4 w-4" />
@@ -49,7 +50,7 @@ export const AppSidebar = () => {
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton
-                active={location.pathname === "/compliance"}
+                isActive={location.pathname === "/compliance"}
                 onClick={() => navigate("/compliance")}
               >
                 <ShieldCheck className="h-4 w-4" />
