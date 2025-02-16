@@ -133,7 +133,7 @@ export const Header = () => {
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 p-4" align="end">
+            <PopoverContent className="w-80 p-4 bg-white border shadow-lg" align="end">
               <div className="space-y-4">
                 <h4 className="font-semibold">Notifications</h4>
                 <div className="space-y-2">
@@ -179,7 +179,7 @@ export const Header = () => {
                 <Settings className="h-5 w-5 text-gray-500" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-56 p-2" align="end">
+            <PopoverContent className="w-56 p-2 bg-white border shadow-lg" align="end">
               <div className="space-y-1">
                 {quickSettings.map((setting) => (
                   <Button
@@ -204,7 +204,7 @@ export const Header = () => {
                 </Avatar>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-56 p-2" align="end">
+            <PopoverContent className="w-56 p-2 bg-white border shadow-lg" align="end">
               <div className="space-y-1">
                 {roles.map((roleOption) => (
                   <Button
