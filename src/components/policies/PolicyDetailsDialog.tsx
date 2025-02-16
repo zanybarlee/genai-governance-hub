@@ -8,21 +8,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Policy } from "@/types/policy";
-import { Edit, Trash, Check, X } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
+import { PolicyHeaderControls } from "./PolicyHeaderControls";
+import { PolicyContent } from "./PolicyContent";
+import { DeletePolicyDialog } from "./DeletePolicyDialog";
 
 interface PolicyDetailsDialogProps {
   policy: Policy | null;
@@ -100,11 +91,11 @@ export const PolicyDetailsDialog = ({
     setEditedPolicy(null);
   };
 
-  const handleDeleteClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setShowDeleteAlert(true);
+  const handlePolicyChange = (updates: Partial<Policy>) => {
+    setEditedPolicy(prev => prev ? { ...prev, ...updates } : prev);
   };
+
+  if (!policy) return null;
 
   return (
     <>
@@ -126,157 +117,55 @@ export const PolicyDetailsDialog = ({
                   {isEditing ? (
                     <Input
                       value={editedPolicy?.name}
-                      onChange={(e) => setEditedPolicy(prev => prev ? { ...prev, name: e.target.value } : prev)}
+                      onChange={(e) => handlePolicyChange({ name: e.target.value })}
                       className="font-bold text-xl"
                     />
                   ) : (
-                    policy?.name
+                    policy.name
                   )}
                 </DialogTitle>
                 <DialogDescription>
-                  Version {policy?.version} • {policy?.category}
+                  Version {policy.version} • {policy.category}
                 </DialogDescription>
               </div>
-              <div className="flex items-center gap-2">
-                {!isEditing && (
-                  <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center gap-2"
-                      onClick={handleStatusChange}
-                    >
-                      {policy?.status === "Active" ? (
-                        <>
-                          <X className="h-4 w-4" />
-                          Set Under Review
-                        </>
-                      ) : (
-                        <>
-                          <Check className="h-4 w-4" />
-                          Set Active
-                        </>
-                      )}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center gap-2"
-                      onClick={handleEdit}
-                    >
-                      <Edit className="h-4 w-4" />
-                      Edit
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="flex items-center gap-2"
-                      onClick={handleDeleteClick}
-                    >
-                      <Trash className="h-4 w-4" />
-                      Delete
-                    </Button>
-                  </>
-                )}
-                {isEditing && (
-                  <>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      className="flex items-center gap-2"
-                      onClick={handleSaveEdit}
-                    >
-                      <Check className="h-4 w-4" />
-                      Save Changes
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center gap-2"
-                      onClick={handleCancelEdit}
-                    >
-                      <X className="h-4 w-4" />
-                      Cancel
-                    </Button>
-                  </>
-                )}
-              </div>
+              <PolicyHeaderControls
+                policy={policy}
+                isEditing={isEditing}
+                onStatusChange={handleStatusChange}
+                onEdit={handleEdit}
+                onDelete={() => setShowDeleteAlert(true)}
+                onSaveEdit={handleSaveEdit}
+                onCancelEdit={handleCancelEdit}
+              />
             </div>
           </DialogHeader>
-          <div className="space-y-4">
+          <PolicyContent
+            policy={policy}
+            isEditing={isEditing}
+            editedPolicy={editedPolicy}
+            onPolicyChange={handlePolicyChange}
+          />
+          <div className="flex justify-between items-center mt-4">
             <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-1">Description</h4>
-              {isEditing ? (
-                <Textarea
-                  value={editedPolicy?.description}
-                  onChange={(e) => setEditedPolicy(prev => prev ? { ...prev, description: e.target.value } : prev)}
-                  className="w-full"
-                />
-              ) : (
-                <p className="text-gray-600">{policy?.description}</p>
-              )}
+              <span className="text-sm text-gray-600">
+                Last updated: {policy.lastUpdated}
+              </span>
             </div>
-            <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-1">Content</h4>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                {isEditing ? (
-                  <Textarea
-                    value={editedPolicy?.content}
-                    onChange={(e) => setEditedPolicy(prev => prev ? { ...prev, content: e.target.value } : prev)}
-                    className="font-mono text-sm min-h-[200px] w-full"
-                  />
-                ) : (
-                  <pre className="whitespace-pre-wrap font-mono text-sm">
-                    {policy?.content}
-                  </pre>
-                )}
-              </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <div>
-                <span className="text-sm text-gray-600">
-                  Last updated: {policy?.lastUpdated}
-                </span>
-              </div>
-              {!isEditing && (
-                <Button variant="outline" onClick={onClose}>
-                  Close
-                </Button>
-              )}
-            </div>
+            {!isEditing && (
+              <Button variant="outline" onClick={onClose}>
+                Close
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
 
-      <AlertDialog 
-        open={showDeleteAlert} 
-        onOpenChange={(open) => {
-          setShowDeleteAlert(open);
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Policy</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{policy?.name}"? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={(e) => {
-              e.stopPropagation();
-              setShowDeleteAlert(false);
-            }}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeletePolicyDialog
+        policy={policy}
+        open={showDeleteAlert}
+        onOpenChange={setShowDeleteAlert}
+        onConfirm={handleDelete}
+      />
     </>
   );
 };
