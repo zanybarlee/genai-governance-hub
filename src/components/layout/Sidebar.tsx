@@ -29,8 +29,8 @@ const roleAccess = {
   superuser: ["dashboard", "policies", "compliance", "cicd", "settings", "agent"],
   admin: ["dashboard", "policies", "compliance", "settings", "agent"],
   developer: ["dashboard", "cicd", "agent"],
-  auditor: ["dashboard", "compliance", "agent"],
-  manager: ["dashboard", "policies", "agent"],
+  auditor: ["dashboard", "compliance"], // Removed "agent"
+  manager: ["dashboard", "policies"], // Removed "agent"
 };
 
 export const AppSidebar = () => {
