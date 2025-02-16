@@ -1,3 +1,4 @@
+
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
@@ -11,8 +12,9 @@ import { CreatePolicyDialog } from "@/components/policies/CreatePolicyDialog";
 import { PolicyDetailsDialog } from "@/components/policies/PolicyDetailsDialog";
 import { PoliciesTable } from "@/components/policies/PoliciesTable";
 import { policyTemplates } from "@/data/policyTemplates";
+import { useToast } from "@/components/ui/use-toast";
 
-const policies: Policy[] = [
+const initialPolicies: Policy[] = [
   {
     id: 1,
     name: "Data Privacy Policy",
@@ -46,11 +48,29 @@ const policies: Policy[] = [
 ];
 
 const Policies = () => {
+  const [policies, setPolicies] = useState<Policy[]>(initialPolicies);
   const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const { toast } = useToast();
 
   const onSubmit = (data: PolicyFormValues) => {
-    console.log("Creating new policy:", data);
+    const template = policyTemplates.find(t => t.id === data.template);
+    const newPolicy: Policy = {
+      id: policies.length + 1,
+      name: data.name,
+      version: "1.0",
+      status: "Under Review",
+      lastUpdated: new Date().toISOString().split('T')[0],
+      category: template?.category || "Uncategorized",
+      description: data.description,
+      content: data.content,
+    };
+
+    setPolicies([...policies, newPolicy]);
+    toast({
+      title: "Policy Created",
+      description: `${newPolicy.name} has been created successfully.`,
+    });
   };
 
   const filteredPolicies = policies.filter((policy) =>
