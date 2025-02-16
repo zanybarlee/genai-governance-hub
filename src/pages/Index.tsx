@@ -11,6 +11,7 @@ import { Policy } from "@/types/policy";
 import { ComplianceChart } from "@/components/dashboard/ComplianceChart";
 import { CICDChart } from "@/components/dashboard/CICDChart";
 import { StatCards } from "@/components/dashboard/StatCards";
+import { ResourceAccessMap } from "@/components/dashboard/ResourceAccessMap";
 import { policyScores } from "@/data/policyScores";
 
 const Index = () => {
@@ -48,6 +49,9 @@ const Index = () => {
                 <div className="lg:col-span-2">
                   <ComplianceChart />
                   <CICDChart />
+                  <div className="mt-6">
+                    <ResourceAccessMap />
+                  </div>
                 </div>
                 <div className="space-y-6">
                   <PolicyScoreCard 
