@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RefreshCw, Send, MessageCircle, Bot, User } from "lucide-react";
 import { toast } from "sonner";
+import ReactMarkdown from 'react-markdown';
 import {
   Dialog,
   DialogContent,
@@ -173,7 +174,34 @@ export const ChatDialog = () => {
                         : 'bg-gray-100 text-gray-800'
                     }`}
                   >
-                    <p className="text-sm">{message.content}</p>
+                    {message.sender === 'user' ? (
+                      <p className="text-sm">{message.content}</p>
+                    ) : (
+                      <div className="text-sm prose prose-sm dark:prose-invert max-w-none">
+                        <ReactMarkdown
+                          components={{
+                            p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                            code: ({ children }) => (
+                              <code className="bg-gray-200 dark:bg-gray-800 px-1 py-0.5 rounded font-mono text-sm">
+                                {children}
+                              </code>
+                            ),
+                            pre: ({ children }) => (
+                              <pre className="bg-gray-200 dark:bg-gray-800 p-2 rounded overflow-x-auto">
+                                {children}
+                              </pre>
+                            ),
+                            a: ({ href, children }) => (
+                              <a href={href} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                                {children}
+                              </a>
+                            ),
+                          }}
+                        >
+                          {message.content}
+                        </ReactMarkdown>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
