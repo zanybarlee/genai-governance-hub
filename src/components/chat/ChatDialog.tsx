@@ -15,7 +15,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 interface Message {
   content: string;
   sender: 'user' | 'bot';
-  timestamp: Date;
 }
 
 export const ChatDialog = () => {
@@ -60,7 +59,6 @@ export const ChatDialog = () => {
     const userMessage: Message = {
       content: input,
       sender: 'user',
-      timestamp: new Date(),
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -72,7 +70,6 @@ export const ChatDialog = () => {
       const botMessage: Message = {
         content: response,
         sender: 'bot',
-        timestamp: new Date(),
       };
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
@@ -110,14 +107,6 @@ export const ChatDialog = () => {
                 >
                   <RefreshCw className="h-4 w-4" />
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsOpen(false)}
-                  className="hover:bg-gray-100"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
               </div>
             </div>
           </DialogHeader>
@@ -147,9 +136,6 @@ export const ChatDialog = () => {
                   }`}
                 >
                   <p className="text-sm">{message.content}</p>
-                  <span className="text-xs opacity-70 mt-1 block">
-                    {message.timestamp.toLocaleTimeString()}
-                  </span>
                 </div>
               </div>
             ))}
