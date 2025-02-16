@@ -1,4 +1,3 @@
-
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
@@ -86,8 +85,15 @@ const Policies = () => {
   };
 
   const handleEditPolicy = (policy: Policy) => {
-    // To be implemented in future updates
-    console.log("Edit policy:", policy);
+    setPolicies(policies.map(p => 
+      p.id === policy.id 
+        ? { ...policy, lastUpdated: new Date().toISOString().split('T')[0] }
+        : p
+    ));
+    toast({
+      title: "Policy Updated",
+      description: `${policy.name} has been updated successfully.`,
+    });
   };
 
   const filteredPolicies = policies.filter((policy) =>

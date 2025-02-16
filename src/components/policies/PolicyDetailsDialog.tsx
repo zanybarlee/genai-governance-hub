@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 interface PolicyDetailsDialogProps {
   policy: Policy | null;
@@ -38,6 +40,8 @@ export const PolicyDetailsDialog = ({
   onEdit 
 }: PolicyDetailsDialogProps) => {
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedPolicy, setEditedPolicy] = useState<Policy | null>(null);
   const { toast } = useToast();
 
   const handleDelete = (e: React.MouseEvent) => {
@@ -70,9 +74,30 @@ export const PolicyDetailsDialog = ({
   const handleEdit = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (policy && onEdit) {
-      onEdit(policy);
+    if (policy) {
+      setEditedPolicy({ ...policy });
+      setIsEditing(true);
     }
+  };
+
+  const handleSaveEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (editedPolicy && onEdit) {
+      onEdit(editedPolicy);
+      setIsEditing(false);
+      toast({
+        title: "Policy Updated",
+        description: `${editedPolicy.name} has been updated successfully.`,
+      });
+    }
+  };
+
+  const handleCancelEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsEditing(false);
+    setEditedPolicy(null);
   };
 
   const handleDeleteClick = (e: React.MouseEvent) => {
@@ -85,6 +110,8 @@ export const PolicyDetailsDialog = ({
     <>
       <Dialog open={!!policy} onOpenChange={(open) => {
         if (!open && !showDeleteAlert) {
+          setIsEditing(false);
+          setEditedPolicy(null);
           onClose();
         }
       }}>
@@ -95,62 +122,114 @@ export const PolicyDetailsDialog = ({
           <DialogHeader>
             <div className="flex items-center justify-between">
               <div>
-                <DialogTitle>{policy?.name}</DialogTitle>
+                <DialogTitle>
+                  {isEditing ? (
+                    <Input
+                      value={editedPolicy?.name}
+                      onChange={(e) => setEditedPolicy(prev => prev ? { ...prev, name: e.target.value } : prev)}
+                      className="font-bold text-xl"
+                    />
+                  ) : (
+                    policy?.name
+                  )}
+                </DialogTitle>
                 <DialogDescription>
                   Version {policy?.version} • {policy?.category}
                 </DialogDescription>
               </div>
               <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                  onClick={handleStatusChange}
-                >
-                  {policy?.status === "Active" ? (
-                    <>
-                      <X className="h-4 w-4" />
-                      Set Under Review
-                    </>
-                  ) : (
-                    <>
+                {!isEditing && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-2"
+                      onClick={handleStatusChange}
+                    >
+                      {policy?.status === "Active" ? (
+                        <>
+                          <X className="h-4 w-4" />
+                          Set Under Review
+                        </>
+                      ) : (
+                        <>
+                          <Check className="h-4 w-4" />
+                          Set Active
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-2"
+                      onClick={handleEdit}
+                    >
+                      <Edit className="h-4 w-4" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="flex items-center gap-2"
+                      onClick={handleDeleteClick}
+                    >
+                      <Trash className="h-4 w-4" />
+                      Delete
+                    </Button>
+                  </>
+                )}
+                {isEditing && (
+                  <>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="flex items-center gap-2"
+                      onClick={handleSaveEdit}
+                    >
                       <Check className="h-4 w-4" />
-                      Set Active
-                    </>
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                  onClick={handleEdit}
-                >
-                  <Edit className="h-4 w-4" />
-                  Edit
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  className="flex items-center gap-2"
-                  onClick={handleDeleteClick}
-                >
-                  <Trash className="h-4 w-4" />
-                  Delete
-                </Button>
+                      Save Changes
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-2"
+                      onClick={handleCancelEdit}
+                    >
+                      <X className="h-4 w-4" />
+                      Cancel
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </DialogHeader>
           <div className="space-y-4">
             <div>
               <h4 className="text-sm font-medium text-gray-700 mb-1">Description</h4>
-              <p className="text-gray-600">{policy?.description}</p>
+              {isEditing ? (
+                <Textarea
+                  value={editedPolicy?.description}
+                  onChange={(e) => setEditedPolicy(prev => prev ? { ...prev, description: e.target.value } : prev)}
+                  className="w-full"
+                />
+              ) : (
+                <p className="text-gray-600">{policy?.description}</p>
+              )}
             </div>
             <div>
               <h4 className="text-sm font-medium text-gray-700 mb-1">Content</h4>
               <div className="bg-gray-50 p-4 rounded-lg">
-                <pre className="whitespace-pre-wrap font-mono text-sm">
-                  {policy?.content}
-                </pre>
+                {isEditing ? (
+                  <Textarea
+                    value={editedPolicy?.content}
+                    onChange={(e) => setEditedPolicy(prev => prev ? { ...prev, content: e.target.value } : prev)}
+                    className="font-mono text-sm min-h-[200px] w-full"
+                  />
+                ) : (
+                  <pre className="whitespace-pre-wrap font-mono text-sm">
+                    {policy?.content}
+                  </pre>
+                )}
               </div>
             </div>
             <div className="flex justify-between items-center">
@@ -159,9 +238,11 @@ export const PolicyDetailsDialog = ({
                   Last updated: {policy?.lastUpdated}
                 </span>
               </div>
-              <Button variant="outline" onClick={onClose}>
-                Close
-              </Button>
+              {!isEditing && (
+                <Button variant="outline" onClick={onClose}>
+                  Close
+                </Button>
+              )}
             </div>
           </div>
         </DialogContent>
