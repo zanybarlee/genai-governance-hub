@@ -6,18 +6,32 @@ import {
   ShieldCheck,
   GitBranch,
   Bot,
+  ChevronDown,
 } from "lucide-react";
 import { SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRole } from "@/contexts/RoleContext";
 import { roleAccess, AccessibleModule, Role } from "@/constants/roleAccess";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface SidebarNavItemsProps {
   showIframe: boolean;
   setShowIframe: (show: boolean) => void;
+  selectedUrl: string;
+  setSelectedUrl: (url: string) => void;
 }
 
-export const SidebarNavItems = ({ showIframe, setShowIframe }: SidebarNavItemsProps) => {
+export const SidebarNavItems = ({ 
+  showIframe, 
+  setShowIframe, 
+  selectedUrl, 
+  setSelectedUrl 
+}: SidebarNavItemsProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { role } = useRole();
@@ -28,6 +42,17 @@ export const SidebarNavItems = ({ showIframe, setShowIframe }: SidebarNavItemsPr
     console.log(`Checking access for ${role} to ${module}: ${hasAccess}`);
     return hasAccess;
   };
+
+  const agentUrls = [
+    {
+      name: "Tool Agent",
+      url: "http://127.0.0.1:3000/canvas/36cfa13e-643c-4d07-8777-91f21e7157ca"
+    },
+    {
+      name: "Multi Agent",
+      url: "http://127.0.0.1:3000/agentcanvas/4d1ca9ff-9090-4b34-a15a-6f9d4f1a1835"
+    }
+  ];
 
   return (
     <>
@@ -93,13 +118,30 @@ export const SidebarNavItems = ({ showIframe, setShowIframe }: SidebarNavItemsPr
 
       {hasAccess("agent") && (
         <SidebarMenuItem>
-          <SidebarMenuButton
-            isActive={showIframe}
-            onClick={() => setShowIframe(!showIframe)}
-          >
-            <Bot className="h-4 w-4" />
-            <span>AI Agent</span>
-          </SidebarMenuButton>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton
+                isActive={showIframe}
+              >
+                <Bot className="h-4 w-4" />
+                <span>AI Agent</span>
+                <ChevronDown className="h-4 w-4 ml-auto" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              {agentUrls.map((agent) => (
+                <DropdownMenuItem
+                  key={agent.url}
+                  onClick={() => {
+                    setSelectedUrl(agent.url);
+                    setShowIframe(true);
+                  }}
+                >
+                  {agent.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </SidebarMenuItem>
       )}
     </>

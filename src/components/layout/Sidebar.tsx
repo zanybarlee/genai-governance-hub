@@ -17,6 +17,7 @@ import { AIAgentFrame } from "./AIAgentFrame";
 export const AppSidebar = () => {
   const [showIframe, setShowIframe] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [selectedUrl, setSelectedUrl] = useState("http://127.0.0.1:3000/canvas/36cfa13e-643c-4d07-8777-91f21e7157ca");
 
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
@@ -34,6 +35,8 @@ export const AppSidebar = () => {
               <SidebarNavItems 
                 showIframe={showIframe}
                 setShowIframe={setShowIframe}
+                selectedUrl={selectedUrl}
+                setSelectedUrl={setSelectedUrl}
               />
             </SidebarMenu>
           </SidebarGroup>
@@ -57,6 +60,7 @@ export const AppSidebar = () => {
           isFullscreen={isFullscreen}
           toggleFullscreen={toggleFullscreen}
           onClose={() => setShowIframe(false)}
+          url={selectedUrl}
         />
       )}
     </>

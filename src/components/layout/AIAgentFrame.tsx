@@ -6,9 +6,10 @@ interface AIAgentFrameProps {
   isFullscreen: boolean;
   toggleFullscreen: () => void;
   onClose: () => void;
+  url: string;
 }
 
-export const AIAgentFrame = ({ isFullscreen, toggleFullscreen, onClose }: AIAgentFrameProps) => {
+export const AIAgentFrame = ({ isFullscreen, toggleFullscreen, onClose, url }: AIAgentFrameProps) => {
   return (
     <div className={`fixed inset-0 bg-black/50 z-50 flex items-center justify-center ${isFullscreen ? 'p-0' : 'p-8'}`}>
       <div 
@@ -17,7 +18,7 @@ export const AIAgentFrame = ({ isFullscreen, toggleFullscreen, onClose }: AIAgen
         }`}
       >
         <iframe
-          src="http://127.0.0.1:3000/canvas/36cfa13e-643c-4d07-8777-91f21e7157ca"
+          src={url}
           className="w-full h-full rounded-lg"
           title="AI Agent Canvas"
         />
