@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Bot } from "lucide-react";
@@ -158,6 +159,10 @@ export const ChatDialog = () => {
     toast.success("Chat history cleared");
   };
 
+  const handleOpenChat = () => {
+    setIsDetached(true);
+  };
+
   const ChatContent = ({ isDetached }: { isDetached: boolean }) => (
     <div className="h-full flex flex-col">
       <ChatHeader 
@@ -212,7 +217,7 @@ export const ChatDialog = () => {
   return (
     <>
       <Button
-        onClick={() => setIsOpen(true)}
+        onClick={handleOpenChat}
         className="fixed bottom-6 right-6 rounded-full w-12 h-12 shadow-lg"
       >
         <MessageCircle className="h-6 w-6" />
