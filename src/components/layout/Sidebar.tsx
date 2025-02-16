@@ -152,29 +152,29 @@ export const AppSidebar = () => {
               isFullscreen ? 'w-full h-full rounded-none' : 'w-[80vw] h-[80vh]'
             }`}
           >
-            <div className="absolute top-4 right-4 flex gap-2 z-10">
+            <div className="absolute top-0 right-0 flex gap-2 p-2 bg-white/80 backdrop-blur-sm rounded-bl-lg z-10">
               <Button
                 size="icon"
                 variant="ghost"
                 onClick={toggleFullscreen}
-                className="p-2 hover:bg-gray-100 rounded-full"
+                className="hover:bg-gray-100 rounded-full"
               >
                 {isFullscreen ? (
-                  <Minimize2 className="h-5 w-5" />
+                  <Minimize2 className="h-4 w-4" />
                 ) : (
-                  <Maximize2 className="h-5 w-5" />
+                  <Maximize2 className="h-4 w-4" />
                 )}
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
                 onClick={() => setShowIframe(false)}
-                className="p-2 hover:bg-gray-100 rounded-full"
+                className="hover:bg-gray-100 rounded-full"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
+                  width="16"
+                  height="16"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
