@@ -1,3 +1,4 @@
+
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
@@ -58,7 +59,7 @@ const Policies = () => {
       id: policies.length + 1,
       name: data.name,
       version: "1.0",
-      status: "Under Review",
+      status: "Under Review", // Set initial status to "Under Review"
       lastUpdated: new Date().toISOString().split('T')[0],
       category: template?.category || "Uncategorized",
       description: data.description,
@@ -68,12 +69,8 @@ const Policies = () => {
     setPolicies([...policies, newPolicy]);
     toast({
       title: "Policy Created",
-      description: `${newPolicy.name} has been created successfully.`,
+      description: `${newPolicy.name} has been created successfully and is Under Review.`,
     });
-  };
-
-  const handleDeletePolicy = (policy: Policy) => {
-    setPolicies(policies.filter(p => p.id !== policy.id));
   };
 
   const handleStatusChange = (policy: Policy, newStatus: "Active" | "Under Review") => {
@@ -82,6 +79,14 @@ const Policies = () => {
         ? { ...p, status: newStatus, lastUpdated: new Date().toISOString().split('T')[0] }
         : p
     ));
+    toast({
+      title: "Status Updated",
+      description: `${policy.name} is now ${newStatus}.`,
+    });
+  };
+
+  const handleDeletePolicy = (policy: Policy) => {
+    setPolicies(policies.filter(p => p.id !== policy.id));
   };
 
   const handleEditPolicy = (policy: Policy) => {
