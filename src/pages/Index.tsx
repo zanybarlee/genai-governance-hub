@@ -1,4 +1,3 @@
-
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
@@ -279,15 +278,15 @@ const Index = () => {
                     </div>
                   </Card>
                 </div>
-                <div className="space-y-6">
+                <div>
                   <ActivityFeed />
-                  <ChatDialog />
                 </div>
               </div>
             </div>
           </main>
         </div>
       </div>
+      <ChatDialog />
     </SidebarProvider>
   );
 };
