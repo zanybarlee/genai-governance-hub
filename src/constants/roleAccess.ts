@@ -7,5 +7,5 @@ export const roleAccess = {
   manager: ["dashboard", "policies"],
 } as const;
 
-export type Module = keyof typeof roleAccess;
-export type AccessibleModule = typeof roleAccess[keyof typeof roleAccess][number];
+export type Role = keyof typeof roleAccess;
+export type AccessibleModule = (typeof roleAccess)[Role][number];
