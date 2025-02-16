@@ -138,6 +138,11 @@ export const ChatDialog = () => {
     document.removeEventListener('mouseup', handleMouseUp);
   };
 
+  const handleClose = () => {
+    setIsDetached(false);
+    setIsOpen(false);
+  };
+
   const handleDetach = () => {
     setIsDetached(true);
     setIsOpen(false);
@@ -159,6 +164,7 @@ export const ChatDialog = () => {
         isDetached={isDetached} 
         onClear={handleClear}
         onToggleDetach={isDetached ? handleAttach : handleDetach}
+        onClose={isDetached ? handleClose : undefined}
       />
 
       <ScrollArea className="flex-1 px-4 pb-4">

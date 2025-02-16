@@ -1,15 +1,16 @@
 
 import { Button } from "@/components/ui/button";
 import { DialogTitle } from "@/components/ui/dialog";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, X } from "lucide-react";
 
 interface ChatHeaderProps {
   isDetached: boolean;
   onClear: () => void;
   onToggleDetach: () => void;
+  onClose?: () => void;
 }
 
-export const ChatHeader = ({ isDetached, onClear, onToggleDetach }: ChatHeaderProps) => (
+export const ChatHeader = ({ isDetached, onClear, onToggleDetach, onClose }: ChatHeaderProps) => (
   <div className="px-4 pt-4 pb-2">
     <div className="flex justify-between items-center">
       {isDetached ? (
@@ -34,6 +35,16 @@ export const ChatHeader = ({ isDetached, onClear, onToggleDetach }: ChatHeaderPr
         >
           {isDetached ? "□" : "⃞"}
         </Button>
+        {isDetached && onClose && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="hover:bg-gray-100 no-drag"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
       </div>
     </div>
   </div>
