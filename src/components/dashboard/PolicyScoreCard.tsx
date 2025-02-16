@@ -56,7 +56,11 @@ export const PolicyScoreCard = ({ scores }: PolicyScoreCardProps) => {
         {scores.map((score, index) => (
           <div
             key={index}
-            className="p-4 bg-gray-50 rounded-lg space-y-2"
+            className="p-4 bg-gray-50 rounded-lg space-y-2 cursor-pointer hover:bg-gray-100 transition-colors"
+            onClick={() => {
+              // TODO: Handle click - will be implemented in next iteration
+              console.log("Clicked policy:", score.name);
+            }}
           >
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-2">
