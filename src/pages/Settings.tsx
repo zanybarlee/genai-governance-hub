@@ -11,17 +11,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { useRole } from "@/contexts/RoleContext";
 
 const Settings = () => {
   const { toast } = useToast();
-  const [selectedRole, setSelectedRole] = useState("developer");
+  const { role, setRole } = useRole();
 
   const handleSaveRole = () => {
     toast({
       title: "Role Updated",
-      description: "The user role has been updated successfully.",
+      description: `Your role has been updated to ${role}.`,
     });
   };
 
@@ -48,13 +48,14 @@ const Settings = () => {
                   <div className="space-y-2">
                     <label className="text-sm font-medium">User Role</label>
                     <Select
-                      value={selectedRole}
-                      onValueChange={setSelectedRole}
+                      value={role}
+                      onValueChange={(value: any) => setRole(value)}
                     >
                       <SelectTrigger className="bg-white">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-white z-50">
+                        <SelectItem value="superuser">Superuser</SelectItem>
                         <SelectItem value="admin">Administrator</SelectItem>
                         <SelectItem value="developer">Developer</SelectItem>
                         <SelectItem value="auditor">Auditor</SelectItem>
