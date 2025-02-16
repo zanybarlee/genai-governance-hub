@@ -10,7 +10,7 @@ import {
 import { SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRole } from "@/contexts/RoleContext";
-import { roleAccess } from "@/constants/roleAccess";
+import { roleAccess, AccessibleModule } from "@/constants/roleAccess";
 
 interface SidebarNavItemsProps {
   showIframe: boolean;
@@ -22,7 +22,7 @@ export const SidebarNavItems = ({ showIframe, setShowIframe }: SidebarNavItemsPr
   const location = useLocation();
   const { role } = useRole();
 
-  const hasAccess = (module: string) => {
+  const hasAccess = (module: AccessibleModule) => {
     const hasAccess = role === "superuser" || roleAccess[role as keyof typeof roleAccess].includes(module);
     console.log(`Checking access for ${role} to ${module}: ${hasAccess}`);
     return hasAccess;

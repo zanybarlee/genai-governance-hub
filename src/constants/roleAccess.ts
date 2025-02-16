@@ -8,3 +8,4 @@ export const roleAccess = {
 } as const;
 
 export type Module = keyof typeof roleAccess;
+export type AccessibleModule = typeof roleAccess[keyof typeof roleAccess][number];
