@@ -15,11 +15,18 @@ import {
 } from "@/components/ui/select";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { CheckCircle2, XCircle, LoaderCircle } from "lucide-react";
 
 const Settings = () => {
   const { toast } = useToast();
   const [githubToken, setGithubToken] = useState("");
   const [selectedRole, setSelectedRole] = useState("developer");
+  const [pipelineStatus, setPipelineStatus] = useState({
+    linting: "success",
+    testing: "running",
+    security: "pending",
+    deployment: "failed",
+  });
 
   const handleSaveGitHub = () => {
     toast({
@@ -33,6 +40,48 @@ const Settings = () => {
       title: "Role Updated",
       description: "The user role has been updated successfully.",
     });
+  };
+
+  const PipelineStep = ({ status, label }: { status: string; label: string }) => {
+    const getIcon = () => {
+      switch (status) {
+        case "success":
+          return <CheckCircle2 className="w-6 h-6 text-green-500" />;
+        case "failed":
+          return <XCircle className="w-6 h-6 text-red-500" />;
+        case "running":
+          return (
+            <LoaderCircle className="w-6 h-6 text-blue-500 animate-spin" />
+          );
+        default:
+          return (
+            <LoaderCircle className="w-6 h-6 text-gray-300" />
+          );
+      }
+    };
+
+    const getStatusColor = () => {
+      switch (status) {
+        case "success":
+          return "bg-green-100 text-green-700";
+        case "failed":
+          return "bg-red-100 text-red-700";
+        case "running":
+          return "bg-blue-100 text-blue-700";
+        default:
+          return "bg-gray-100 text-gray-700";
+      }
+    };
+
+    return (
+      <div className="flex flex-col items-center space-y-2">
+        <div className={`p-3 rounded-full ${getStatusColor()}`}>
+          {getIcon()}
+        </div>
+        <span className="text-sm font-medium">{label}</span>
+        <span className="text-xs capitalize text-gray-500">{status}</span>
+      </div>
+    );
   };
 
   return (
@@ -74,6 +123,25 @@ const Settings = () => {
                         />
                       </div>
                       <Button onClick={handleSaveGitHub}>Save GitHub Settings</Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Pipeline Status</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="py-6">
+                        <div className="flex justify-between items-center max-w-3xl mx-auto relative">
+                          <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 h-1 bg-gray-200">
+                            <div className="w-1/2 h-full bg-blue-500"></div>
+                          </div>
+                          <PipelineStep status={pipelineStatus.linting} label="Linting" />
+                          <PipelineStep status={pipelineStatus.testing} label="Testing" />
+                          <PipelineStep status={pipelineStatus.security} label="Security" />
+                          <PipelineStep status={pipelineStatus.deployment} label="Deployment" />
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
 
