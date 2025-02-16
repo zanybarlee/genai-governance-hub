@@ -159,31 +159,39 @@ export const ChatDialog = () => {
     toast.success("Chat history cleared");
   };
 
-  const ChatContent = () => (
-    <div className="h-full flex flex-col">
-      <DialogHeader className="px-4 pt-4 pb-2">
-        <div className="flex justify-between items-center">
+  const ChatHeader = ({ isDetached }: { isDetached: boolean }) => (
+    <div className="px-4 pt-4 pb-2">
+      <div className="flex justify-between items-center">
+        {isDetached ? (
+          <h2 className="text-lg font-semibold">AI Assistant</h2>
+        ) : (
           <DialogTitle>AI Assistant</DialogTitle>
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleClear}
-              className="hover:bg-gray-100 no-drag"
-            >
-              <RefreshCw className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={isDetached ? handleAttach : handleDetach}
-              className="hover:bg-gray-100 no-drag"
-            >
-              {isDetached ? "□" : "⃞"}
-            </Button>
-          </div>
+        )}
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleClear}
+            className="hover:bg-gray-100 no-drag"
+          >
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={isDetached ? handleAttach : handleDetach}
+            className="hover:bg-gray-100 no-drag"
+          >
+            {isDetached ? "□" : "⃞"}
+          </Button>
         </div>
-      </DialogHeader>
+      </div>
+    </div>
+  );
+
+  const ChatContent = ({ isDetached }: { isDetached: boolean }) => (
+    <div className="h-full flex flex-col">
+      <ChatHeader isDetached={isDetached} />
 
       <ScrollArea className="flex-1 px-4 pb-4">
         <div className="space-y-4">
@@ -305,7 +313,7 @@ export const ChatDialog = () => {
           }}
           onMouseDown={handleDragStart}
         >
-          <ChatContent />
+          <ChatContent isDetached={true} />
         </div>
       ) : (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -317,7 +325,7 @@ export const ChatDialog = () => {
               height: `${dimensions.height}px`,
             }}
           >
-            <ChatContent />
+            <ChatContent isDetached={false} />
           </DialogContent>
         </Dialog>
       )}
