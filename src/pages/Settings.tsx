@@ -1,4 +1,3 @@
-
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
@@ -30,26 +29,42 @@ const Settings = () => {
   const [selectedStage, setSelectedStage] = useState<string | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
 
-  // Simulate real-time updates
   useEffect(() => {
     if (!autoRefresh) return;
 
     const interval = setInterval(() => {
-      // Simulate status changes
-      const stages = ['linting', 'testing', 'security', 'deployment'];
-      const statuses = ['success', 'running', 'pending', 'failed'];
-      const randomStage = stages[Math.floor(Math.random() * stages.length)];
-      const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+      try {
+        const stages = ['linting', 'testing', 'security', 'deployment'];
+        const statuses = ['success', 'running', 'pending', 'failed'];
+        const randomStage = stages[Math.floor(Math.random() * stages.length)];
+        const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
 
-      setPipelineStatus(prev => ({
-        ...prev,
-        [randomStage]: randomStatus
-      }));
+        setPipelineStatus(prev => ({
+          ...prev,
+          [randomStage]: randomStatus
+        }));
 
-      toast({
-        title: "Pipeline Update",
-        description: `${randomStage.charAt(0).toUpperCase() + randomStage.slice(1)} stage is now ${randomStatus}`,
-      });
+        toast({
+          title: "Pipeline Update",
+          description: `${randomStage.charAt(0).toUpperCase() + randomStage.slice(1)} stage is now ${randomStatus}`,
+        });
+      } catch (error) {
+        console.error("Pipeline update error:", error);
+        toast({
+          title: "Pipeline Error",
+          description: "Failed to update pipeline status. Retrying...",
+          variant: "destructive",
+        });
+        
+        if (error instanceof Error && error.message.includes("consecutive")) {
+          setAutoRefresh(false);
+          toast({
+            title: "Auto-refresh Disabled",
+            description: "Too many errors occurred. Please check your connection and try again.",
+            variant: "destructive",
+          });
+        }
+      }
     }, 5000);
 
     return () => clearInterval(interval);
@@ -76,43 +91,74 @@ const Settings = () => {
         command: "npm run lint",
         duration: "45 seconds",
         logs: [
-          "Checking code style...",
-          "Analyzing imports...",
-          "Verifying formatting...",
+          { timestamp: "10:15:32", level: "info", message: "Starting linting process..." },
+          { timestamp: "10:15:33", level: "debug", message: "Checking code style conventions" },
+          { timestamp: "10:15:34", level: "info", message: "Analyzing import statements" },
+          { timestamp: "10:15:35", level: "warning", message: "Found 2 unnecessary imports" },
+          { timestamp: "10:15:36", level: "info", message: "Verifying formatting rules" },
+          { timestamp: "10:15:37", level: "success", message: "Linting completed successfully" }
         ],
+        status: pipelineStatus.linting
       },
       testing: {
         description: "Running unit and integration tests",
         command: "npm run test",
         duration: "2 minutes",
         logs: [
-          "Running unit tests...",
-          "Testing API endpoints...",
-          "Generating coverage report...",
+          { timestamp: "10:16:00", level: "info", message: "Initiating test suite..." },
+          { timestamp: "10:16:01", level: "debug", message: "Loading test configurations" },
+          { timestamp: "10:16:02", level: "info", message: "Running unit tests" },
+          { timestamp: "10:16:03", level: "error", message: "Test failed: Auth component" },
+          { timestamp: "10:16:04", level: "info", message: "Running integration tests" },
+          { timestamp: "10:16:05", level: "success", message: "Integration tests passed" }
         ],
+        status: pipelineStatus.testing
       },
       security: {
         description: "Security vulnerability scanning",
         command: "npm audit",
         duration: "1 minute",
         logs: [
-          "Scanning dependencies...",
-          "Checking for vulnerabilities...",
-          "Analyzing security rules...",
+          { timestamp: "10:17:00", level: "info", message: "Starting security scan..." },
+          { timestamp: "10:17:01", level: "debug", message: "Loading security rules" },
+          { timestamp: "10:17:02", level: "warning", message: "Outdated dependency detected" },
+          { timestamp: "10:17:03", level: "error", message: "Critical vulnerability found" },
+          { timestamp: "10:17:04", level: "info", message: "Generating security report" },
+          { timestamp: "10:17:05", level: "success", message: "Scan completed" }
         ],
+        status: pipelineStatus.security
       },
       deployment: {
         description: "Deploying to production environment",
         command: "npm run deploy",
         duration: "3 minutes",
         logs: [
-          "Building production bundle...",
-          "Uploading assets...",
-          "Updating configuration...",
+          { timestamp: "10:18:00", level: "info", message: "Starting deployment..." },
+          { timestamp: "10:18:01", level: "debug", message: "Building production bundle" },
+          { timestamp: "10:18:02", level: "info", message: "Uploading assets" },
+          { timestamp: "10:18:03", level: "warning", message: "Slow network detected" },
+          { timestamp: "10:18:04", level: "info", message: "Updating configurations" },
+          { timestamp: "10:18:05", level: "success", message: "Deployment successful" }
         ],
+        status: pipelineStatus.deployment
       },
     };
     return details[stage as keyof typeof details];
+  };
+
+  const getLogLevelStyle = (level: string) => {
+    switch (level) {
+      case "error":
+        return "text-red-500";
+      case "warning":
+        return "text-yellow-500";
+      case "success":
+        return "text-green-500";
+      case "debug":
+        return "text-gray-400";
+      default:
+        return "text-gray-200";
+    }
   };
 
   const PipelineStep = ({ status, label }: { status: string; label: string }) => {
@@ -254,10 +300,14 @@ const Settings = () => {
                             </div>
                             <div>
                               <p className="text-sm font-medium mb-2">Logs</p>
-                              <div className="bg-gray-900 text-gray-100 p-3 rounded text-sm font-mono">
+                              <div className="bg-gray-900 text-gray-100 p-3 rounded text-sm font-mono max-h-80 overflow-y-auto">
                                 {getStageDetails(selectedStage).logs.map((log, index) => (
-                                  <div key={index} className="py-1">
-                                    {log}
+                                  <div key={index} className="py-1 flex items-start space-x-2">
+                                    <span className="text-gray-500">{log.timestamp}</span>
+                                    <span className={`uppercase text-xs ${getLogLevelStyle(log.level)}`}>
+                                      [{log.level}]
+                                    </span>
+                                    <span>{log.message}</span>
                                   </div>
                                 ))}
                               </div>
