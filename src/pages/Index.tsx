@@ -3,6 +3,7 @@ import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
+import { PolicyScoreCard } from "@/components/dashboard/PolicyScoreCard";
 import { ChatDialog } from "@/components/chat/ChatDialog";
 import { Shield, Book, Users, AlertTriangle, GitBranch } from "lucide-react";
 import {
@@ -54,6 +55,37 @@ const cicdData = [
     total: 56
   },
 ];
+
+const policyScores = [
+  {
+    name: "Trusted Development Policy",
+    score: 97,
+    lastUpdated: "2024-03-20 14:30",
+    status: "healthy",
+    description: "Automated testing and compliance scoring for development practices and standards."
+  },
+  {
+    name: "Data Privacy & Ethics",
+    score: 94,
+    lastUpdated: "2024-03-20 14:15",
+    status: "warning",
+    description: "Monitoring of data handling practices and ethical guidelines adherence."
+  },
+  {
+    name: "Model Evaluation Framework",
+    score: 98,
+    lastUpdated: "2024-03-20 14:00",
+    status: "healthy",
+    description: "Assessment of model testing, validation, and performance metrics."
+  },
+  {
+    name: "Deployment Security",
+    score: 96,
+    lastUpdated: "2024-03-20 13:45",
+    status: "healthy",
+    description: "Security compliance and deployment process validation scores."
+  }
+] as const;
 
 const Index = () => {
   return (
@@ -278,7 +310,8 @@ const Index = () => {
                     </div>
                   </Card>
                 </div>
-                <div>
+                <div className="space-y-6">
+                  <PolicyScoreCard scores={policyScores} />
                   <ActivityFeed />
                 </div>
               </div>
