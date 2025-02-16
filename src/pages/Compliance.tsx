@@ -9,10 +9,13 @@ import {
   FileText, 
   ShieldCheck, 
   Activity,
-  CheckCircle2
+  CheckCircle2,
+  Download,
+  Loader2
 } from "lucide-react";
 import {
   Card,
+  Card as CardComponent,
   CardContent,
   CardDescription,
   CardHeader,
@@ -20,15 +23,54 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const Compliance = () => {
   const { toast } = useToast();
+  const [isGenerating, setIsGenerating] = useState<string | null>(null);
+  const [showReportDialog, setShowReportDialog] = useState(false);
+  const [currentReport, setCurrentReport] = useState<{
+    type: 'monthly' | 'audit';
+    date: string;
+    size: string;
+  } | null>(null);
 
-  const generateReport = () => {
+  const generateReport = (type: 'monthly' | 'audit') => {
+    setIsGenerating(type);
+    
+    // Simulate report generation
+    setTimeout(() => {
+      setIsGenerating(null);
+      
+      const report = {
+        type,
+        date: new Date().toLocaleDateString(),
+        size: '2.4 MB'
+      };
+      
+      setCurrentReport(report);
+      setShowReportDialog(true);
+      
+      toast({
+        title: "Report Generated Successfully",
+        description: `Your ${type === 'monthly' ? 'monthly compliance' : 'audit log'} report is ready to download.`,
+      });
+    }, 2000);
+  };
+
+  const downloadReport = () => {
     toast({
-      title: "Generating Report",
-      description: "Your compliance report is being generated and will be ready shortly.",
+      title: "Download Started",
+      description: "Your report download will begin shortly.",
     });
+    setShowReportDialog(false);
   };
 
   return (
@@ -76,7 +118,6 @@ const Compliance = () => {
 
               {/* Main Content Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Activity Feed */}
                 <div className="lg:col-span-2">
                   <ActivityFeed />
                 </div>
@@ -92,19 +133,29 @@ const Compliance = () => {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <Button 
-                        onClick={generateReport}
+                        onClick={() => generateReport('monthly')}
                         className="w-full flex items-center gap-2"
+                        disabled={isGenerating !== null}
                       >
-                        <FileText className="h-4 w-4" />
-                        Generate Monthly Report
+                        {isGenerating === 'monthly' ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <FileText className="h-4 w-4" />
+                        )}
+                        {isGenerating === 'monthly' ? 'Generating...' : 'Generate Monthly Report'}
                       </Button>
                       <Button 
                         variant="outline"
-                        onClick={generateReport}
+                        onClick={() => generateReport('audit')}
                         className="w-full flex items-center gap-2"
+                        disabled={isGenerating !== null}
                       >
-                        <Activity className="h-4 w-4" />
-                        Generate Audit Log
+                        {isGenerating === 'audit' ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Activity className="h-4 w-4" />
+                        )}
+                        {isGenerating === 'audit' ? 'Generating...' : 'Generate Audit Log'}
                       </Button>
                     </CardContent>
                   </Card>
@@ -139,6 +190,44 @@ const Compliance = () => {
           </main>
         </div>
       </div>
+
+      <Dialog open={showReportDialog} onOpenChange={setShowReportDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Report Generated</DialogTitle>
+            <DialogDescription>
+              Your report has been generated successfully
+            </DialogDescription>
+          </DialogHeader>
+          {currentReport && (
+            <div className="space-y-4">
+              <div className="p-4 bg-gray-50 rounded-lg space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Type</span>
+                  <span className="font-medium">
+                    {currentReport.type === 'monthly' ? 'Monthly Compliance Report' : 'Audit Log Report'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Generated on</span>
+                  <span className="font-medium">{currentReport.date}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Size</span>
+                  <span className="font-medium">{currentReport.size}</span>
+                </div>
+              </div>
+              <Button 
+                className="w-full flex items-center justify-center gap-2"
+                onClick={downloadReport}
+              >
+                <Download className="h-4 w-4" />
+                Download Report
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   );
 };
