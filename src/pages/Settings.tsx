@@ -11,17 +11,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { useRole } from "@/contexts/RoleContext";
+import { useState } from "react";
 
 const Settings = () => {
   const { toast } = useToast();
   const { role, setRole } = useRole();
 
+  // Notification preferences state
+  const [notificationPreferences, setNotificationPreferences] = useState({
+    policyUpdates: true,
+    complianceAlerts: true,
+    systemUpdates: true,
+    securityAlerts: true,
+  });
+
+  // Security settings state
+  const [securitySettings, setSecuritySettings] = useState({
+    twoFactorAuth: false,
+    loginAlerts: true,
+    deviceManagement: true,
+  });
+
   const handleSaveRole = () => {
     toast({
       title: "Role Updated",
       description: `Your role has been updated to ${role}.`,
+    });
+  };
+
+  const handleNotificationSave = () => {
+    toast({
+      title: "Notification Preferences Saved",
+      description: "Your notification preferences have been updated successfully.",
+    });
+  };
+
+  const handleSecuritySave = () => {
+    toast({
+      title: "Security Settings Saved",
+      description: "Your security settings have been updated successfully.",
     });
   };
 
@@ -64,6 +96,134 @@ const Settings = () => {
                     </Select>
                   </div>
                   <Button onClick={handleSaveRole}>Update Role</Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Notification Preferences</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="policy-updates">Policy Updates</Label>
+                      <Switch
+                        id="policy-updates"
+                        checked={notificationPreferences.policyUpdates}
+                        onCheckedChange={(checked) =>
+                          setNotificationPreferences((prev) => ({
+                            ...prev,
+                            policyUpdates: checked,
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="compliance-alerts">Compliance Alerts</Label>
+                      <Switch
+                        id="compliance-alerts"
+                        checked={notificationPreferences.complianceAlerts}
+                        onCheckedChange={(checked) =>
+                          setNotificationPreferences((prev) => ({
+                            ...prev,
+                            complianceAlerts: checked,
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="system-updates">System Updates</Label>
+                      <Switch
+                        id="system-updates"
+                        checked={notificationPreferences.systemUpdates}
+                        onCheckedChange={(checked) =>
+                          setNotificationPreferences((prev) => ({
+                            ...prev,
+                            systemUpdates: checked,
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="security-alerts">Security Alerts</Label>
+                      <Switch
+                        id="security-alerts"
+                        checked={notificationPreferences.securityAlerts}
+                        onCheckedChange={(checked) =>
+                          setNotificationPreferences((prev) => ({
+                            ...prev,
+                            securityAlerts: checked,
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
+                  <Button onClick={handleNotificationSave}>Save Preferences</Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Security Settings</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="2fa">Two-Factor Authentication</Label>
+                        <p className="text-sm text-gray-500">
+                          Add an extra layer of security to your account
+                        </p>
+                      </div>
+                      <Switch
+                        id="2fa"
+                        checked={securitySettings.twoFactorAuth}
+                        onCheckedChange={(checked) =>
+                          setSecuritySettings((prev) => ({
+                            ...prev,
+                            twoFactorAuth: checked,
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="login-alerts">Login Alerts</Label>
+                        <p className="text-sm text-gray-500">
+                          Receive alerts for new login attempts
+                        </p>
+                      </div>
+                      <Switch
+                        id="login-alerts"
+                        checked={securitySettings.loginAlerts}
+                        onCheckedChange={(checked) =>
+                          setSecuritySettings((prev) => ({
+                            ...prev,
+                            loginAlerts: checked,
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="device-management">Device Management</Label>
+                        <p className="text-sm text-gray-500">
+                          Monitor and manage devices accessing your account
+                        </p>
+                      </div>
+                      <Switch
+                        id="device-management"
+                        checked={securitySettings.deviceManagement}
+                        onCheckedChange={(checked) =>
+                          setSecuritySettings((prev) => ({
+                            ...prev,
+                            deviceManagement: checked,
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
+                  <Button onClick={handleSecuritySave}>Save Security Settings</Button>
                 </CardContent>
               </Card>
             </div>
