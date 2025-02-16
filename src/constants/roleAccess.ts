@@ -1,11 +1,10 @@
 
-export const roleAccess = {
-  superuser: ["dashboard", "policies", "compliance", "cicd", "settings", "agent"],
-  admin: ["dashboard", "policies", "compliance", "settings", "agent"],
-  developer: ["dashboard", "cicd", "agent"],
-  auditor: ["dashboard", "compliance"],
-  manager: ["dashboard", "policies"],
-} as const;
+export type AccessibleModule = "dashboard" | "policies" | "compliance" | "settings" | "cicd" | "agent" | "monitoring";
+export type Role = "admin" | "developer" | "viewer" | "superuser";
 
-export type Role = keyof typeof roleAccess;
-export type AccessibleModule = (typeof roleAccess)[Role][number];
+export const roleAccess: Record<Role, AccessibleModule[]> = {
+  superuser: ["dashboard", "policies", "compliance", "settings", "cicd", "agent", "monitoring"],
+  admin: ["dashboard", "policies", "compliance", "settings", "cicd", "agent", "monitoring"],
+  developer: ["dashboard", "policies", "compliance", "cicd", "agent", "monitoring"],
+  viewer: ["dashboard", "policies", "compliance", "monitoring"]
+};

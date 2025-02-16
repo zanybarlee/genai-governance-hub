@@ -7,6 +7,7 @@ import {
   GitBranch,
   Bot,
   ChevronDown,
+  LineChart
 } from "lucide-react";
 import { SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -39,7 +40,6 @@ export const SidebarNavItems = ({
   const hasAccess = (module: AccessibleModule) => {
     const userRole = role as Role;
     const hasAccess = role === "superuser" || roleAccess[userRole].includes(module as any);
-    console.log(`Checking access for ${role} to ${module}: ${hasAccess}`);
     return hasAccess;
   };
 
@@ -51,6 +51,10 @@ export const SidebarNavItems = ({
     {
       name: "Multi Agent",
       url: "http://127.0.0.1:3000/agentcanvas/4d1ca9ff-9090-4b34-a15a-6f9d4f1a1835"
+    },
+    {
+      name: "Monitoring",
+      url: "https://smith.langchain.com/o/a7cdf746-3eb8-5ac4-bcdd-cb25ca509502/projects/p/8a2435d0-9902-491d-a2ca-f24d45ca5150?timeModel=%7B%22duration%22%3A%227d%22%7D"
     }
   ];
 
@@ -117,7 +121,7 @@ export const SidebarNavItems = ({
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 bg-white border border-gray-200 shadow-lg">
-              {agentUrls.map((agent) => (
+              {agentUrls.slice(0, 2).map((agent) => (
                 <DropdownMenuItem
                   key={agent.url}
                   onClick={() => {
@@ -131,6 +135,21 @@ export const SidebarNavItems = ({
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+        </SidebarMenuItem>
+      )}
+
+      {hasAccess("agent") && (
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            isActive={showIframe && selectedUrl === agentUrls[2].url}
+            onClick={() => {
+              setSelectedUrl(agentUrls[2].url);
+              setShowIframe(true);
+            }}
+          >
+            <LineChart className="h-4 w-4" />
+            <span>Monitoring</span>
+          </SidebarMenuButton>
         </SidebarMenuItem>
       )}
       
