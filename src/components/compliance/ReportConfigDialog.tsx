@@ -92,7 +92,7 @@ export const ReportConfigDialog = ({
               <SelectTrigger>
                 <SelectValue placeholder="Select format" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="pdf">PDF Document</SelectItem>
                 <SelectItem value="csv">CSV Spreadsheet</SelectItem>
                 <SelectItem value="excel">Excel Workbook</SelectItem>
