@@ -152,29 +152,34 @@ export const AppSidebar = () => {
               isFullscreen ? 'w-full h-full rounded-none' : 'w-[80vw] h-[80vh]'
             }`}
           >
-            <div className="absolute top-0 right-0 flex gap-2 p-2 bg-white/80 backdrop-blur-sm rounded-bl-lg z-10">
+            <iframe
+              src="http://127.0.0.1:3000/canvas/36cfa13e-643c-4d07-8777-91f21e7157ca"
+              className="w-full h-full rounded-lg"
+              title="AI Agent Canvas"
+            />
+            <div className="absolute top-0 right-0 flex gap-1 p-1 bg-white/80 backdrop-blur-sm rounded-bl-lg pointer-events-auto">
               <Button
                 size="icon"
                 variant="ghost"
                 onClick={toggleFullscreen}
-                className="hover:bg-gray-100 rounded-full"
+                className="hover:bg-gray-100 rounded-full h-7 w-7"
               >
                 {isFullscreen ? (
-                  <Minimize2 className="h-4 w-4" />
+                  <Minimize2 className="h-3 w-3" />
                 ) : (
-                  <Maximize2 className="h-4 w-4" />
+                  <Maximize2 className="h-3 w-3" />
                 )}
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
                 onClick={() => setShowIframe(false)}
-                className="hover:bg-gray-100 rounded-full"
+                className="hover:bg-gray-100 rounded-full h-7 w-7"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
+                  width="12"
+                  height="12"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -187,11 +192,6 @@ export const AppSidebar = () => {
                 </svg>
               </Button>
             </div>
-            <iframe
-              src="http://127.0.0.1:3000/canvas/36cfa13e-643c-4d07-8777-91f21e7157ca"
-              className="w-full h-full rounded-lg"
-              title="AI Agent Canvas"
-            />
           </div>
         </div>
       )}
