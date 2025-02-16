@@ -67,8 +67,8 @@ export const PolicyScoreCard = ({ scores, onPolicyClick }: PolicyScoreCardProps)
                   <TooltipTrigger>
                     <Info className="h-4 w-4 text-gray-400" />
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="w-[200px] text-sm">{score.description}</p>
+                  <TooltipContent className="bg-white border border-gray-200 shadow-lg">
+                    <p className="w-[200px] text-sm text-gray-600">{score.description}</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
