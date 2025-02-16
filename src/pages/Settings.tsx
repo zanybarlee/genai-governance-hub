@@ -51,10 +51,10 @@ const Settings = () => {
                       value={selectedRole}
                       onValueChange={setSelectedRole}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-white">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white z-50">
                         <SelectItem value="admin">Administrator</SelectItem>
                         <SelectItem value="developer">Developer</SelectItem>
                         <SelectItem value="auditor">Auditor</SelectItem>
