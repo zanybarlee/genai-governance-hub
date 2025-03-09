@@ -1,6 +1,8 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
-import { Role } from "@/constants/roleAccess";
+
+// Updated Role type to include all available roles
+export type Role = "superuser" | "admin" | "developer" | "auditor" | "manager" | "viewer";
 
 interface RoleContextType {
   role: Role;
@@ -10,8 +12,8 @@ interface RoleContextType {
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
-  // Initialize with viewer role as it has basic access
-  const [role, setRole] = useState<Role>("viewer");
+  // Initialize with developer role as default
+  const [role, setRole] = useState<Role>("developer");
 
   return (
     <RoleContext.Provider value={{ role, setRole }}>

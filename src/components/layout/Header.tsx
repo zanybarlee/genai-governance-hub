@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Bell, Settings, UserRound, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -46,11 +45,31 @@ export const Header = () => {
   ]);
 
   const roles = [
-    { id: "superuser", name: "Superuser", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Super" },
-    { id: "admin", name: "Administrator", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" },
-    { id: "developer", name: "Developer", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Dev" },
-    { id: "auditor", name: "Auditor", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Audit" },
-    { id: "manager", name: "Policy Manager", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Manager" },
+    { 
+      id: "superuser", 
+      name: "Superuser", 
+      avatar: "/lovable-uploads/90ba06a1-861e-4c6c-896f-0075d15c98c6.png#0" 
+    },
+    { 
+      id: "admin", 
+      name: "Administrator", 
+      avatar: "/lovable-uploads/90ba06a1-861e-4c6c-896f-0075d15c98c6.png#1" 
+    },
+    { 
+      id: "developer", 
+      name: "Developer", 
+      avatar: "/lovable-uploads/90ba06a1-861e-4c6c-896f-0075d15c98c6.png#2" 
+    },
+    { 
+      id: "auditor", 
+      name: "Auditor", 
+      avatar: "/lovable-uploads/90ba06a1-861e-4c6c-896f-0075d15c98c6.png#3" 
+    },
+    { 
+      id: "manager", 
+      name: "Policy Manager", 
+      avatar: "/lovable-uploads/90ba06a1-861e-4c6c-896f-0075d15c98c6.png#4" 
+    },
   ];
 
   const quickSettings = [
