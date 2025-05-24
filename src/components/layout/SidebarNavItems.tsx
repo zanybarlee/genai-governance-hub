@@ -1,4 +1,3 @@
-
 import {
   LayoutDashboard,
   FileText,
@@ -42,8 +41,15 @@ export const SidebarNavItems = ({
 
   const hasAccess = (module: AccessibleModule) => {
     const userRole = role as Role;
-    const hasAccess = role === "superuser" || roleAccess[userRole].includes(module as any);
-    return hasAccess;
+    const allowedModules = roleAccess[userRole];
+    
+    // Safety check to ensure allowedModules exists
+    if (!allowedModules) {
+      console.warn(`No access defined for role: ${userRole}`);
+      return false;
+    }
+    
+    return role === "superuser" || allowedModules.includes(module);
   };
 
   const monitoringUrl = "https://smith.langchain.com/o/a7cdf746-3eb8-5ac4-bcdd-cb25ca509502/projects/p/8a2435d0-9902-491d-a2ca-f24d45ca5150?timeModel=%7B%22duration%22%3A%227d%22%7D";

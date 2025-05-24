@@ -42,6 +42,8 @@ export function RoleManagement() {
               <SelectItem value="superuser">Superuser</SelectItem>
               <SelectItem value="admin">Administrator</SelectItem>
               <SelectItem value="developer">Developer</SelectItem>
+              <SelectItem value="auditor">Auditor</SelectItem>
+              <SelectItem value="manager">Manager</SelectItem>
               <SelectItem value="viewer">Viewer</SelectItem>
             </SelectContent>
           </Select>

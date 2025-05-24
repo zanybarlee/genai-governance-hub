@@ -1,5 +1,5 @@
 
-export type Role = "superuser" | "admin" | "developer" | "auditor" | "manager";
+export type Role = "superuser" | "admin" | "developer" | "auditor" | "manager" | "viewer";
 
 export type AccessibleModule = 
   | "dashboard" 
@@ -16,4 +16,5 @@ export const roleAccess: Record<Role, AccessibleModule[]> = {
   developer: ["dashboard", "policies", "cicd", "agent"],
   auditor: ["dashboard", "policies", "compliance", "audit"],
   manager: ["dashboard", "policies", "compliance", "audit"],
+  viewer: ["dashboard"],
 };
