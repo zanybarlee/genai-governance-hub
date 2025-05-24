@@ -148,7 +148,7 @@ export const AuditExecution = ({ auditId }: AuditExecutionProps) => {
         <p className="text-sm text-gray-600">
           {progressPercentage.toFixed(0)}% complete • {totalQuestions - completedQuestions} questions remaining
         </p>
-      </div>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Questions List */}
@@ -195,106 +195,102 @@ export const AuditExecution = ({ auditId }: AuditExecutionProps) => {
 
         {/* Active Question */}
         <div className="lg:col-span-2">
-          {activeQuestion && (
-            <Card className="p-6">
-              {(() => {
-                const question = questions.find(q => q.id === activeQuestion);
-                if (!question) return null;
+          {activeQuestion && (() => {
+            const question = questions.find(q => q.id === activeQuestion);
+            if (!question) return null;
 
-                return (
-                  <>
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Bot className="h-5 w-5 text-primary-500" />
-                          <span className="font-medium text-primary-900">{question.domain}</span>
-                          <Badge variant="outline">{question.policyReference}</Badge>
-                        </div>
-                        <p className="text-gray-800 text-base leading-relaxed">{question.question}</p>
+            return (
+              <Card className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Bot className="h-5 w-5 text-primary-500" />
+                      <span className="font-medium text-primary-900">{question.domain}</span>
+                      <Badge variant="outline">{question.policyReference}</Badge>
+                    </div>
+                    <p className="text-gray-800 text-base leading-relaxed">{question.question}</p>
+                  </div>
+                </div>
+
+                {question.status === "pending" ? (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Your Response
+                      </label>
+                      <Textarea
+                        value={response}
+                        onChange={(e) => setResponse(e.target.value)}
+                        placeholder="Provide your response to this audit question..."
+                        rows={4}
+                      />
+                    </div>
+                    
+                    <div className="flex gap-3">
+                      <Button 
+                        onClick={() => handleAnswerSubmit(question.id)}
+                        disabled={!response.trim()}
+                        className="gap-2"
+                      >
+                        <User className="h-4 w-4" />
+                        Submit Response
+                      </Button>
+                      
+                      <Button 
+                        variant="outline"
+                        onClick={() => handleSystemCheck(question.id)}
+                        className="gap-2"
+                      >
+                        <Bot className="h-4 w-4" />
+                        Run System Check
+                      </Button>
+                      
+                      <Button variant="outline" className="gap-2">
+                        <Upload className="h-4 w-4" />
+                        Upload Evidence
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <User className="h-4 w-4 text-gray-600" />
+                        <span className="text-sm font-medium text-gray-900">Auditor Response</span>
                       </div>
+                      <p className="text-gray-800">{question.response}</p>
                     </div>
 
-                    {question.status === "pending" ? (
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Your Response
-                          </label>
-                          <Textarea
-                            value={response}
-                            onChange={(e) => setResponse(e.target.value)}
-                            placeholder="Provide your response to this audit question..."
-                            rows={4}
-                          />
+                    {question.evidence && question.evidence.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-900 mb-2">Evidence Files</h4>
+                        <div className="flex gap-2">
+                          {question.evidence.map((file, index) => (
+                            <Badge key={index} variant="outline" className="gap-1">
+                              <FileText className="h-3 w-3" />
+                              {file}
+                              <ExternalLink className="h-3 w-3" />
+                            </Badge>
+                          ))}
                         </div>
-                        
-                        <div className="flex gap-3">
-                          <Button 
-                            onClick={() => handleAnswerSubmit(question.id)}
-                            disabled={!response.trim()}
-                            className="gap-2"
-                          >
-                            <User className="h-4 w-4" />
-                            Submit Response
-                          </Button>
-                          
-                          <Button 
-                            variant="outline"
-                            onClick={() => handleSystemCheck(question.id)}
-                            className="gap-2"
-                          >
-                            <Bot className="h-4 w-4" />
-                            Run System Check
-                          </Button>
-                          
-                          <Button variant="outline" className="gap-2">
-                            <Upload className="h-4 w-4" />
-                            Upload Evidence
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        <div className="p-4 bg-gray-50 rounded-lg">
-                          <div className="flex items-center gap-2 mb-2">
-                            <User className="h-4 w-4 text-gray-600" />
-                            <span className="text-sm font-medium text-gray-900">Auditor Response</span>
-                          </div>
-                          <p className="text-gray-800">{question.response}</p>
-                        </div>
-
-                        {question.evidence && question.evidence.length > 0 && (
-                          <div>
-                            <h4 className="text-sm font-medium text-gray-900 mb-2">Evidence Files</h4>
-                            <div className="flex gap-2">
-                              {question.evidence.map((file, index) => (
-                                <Badge key={index} variant="outline" className="gap-1">
-                                  <FileText className="h-3 w-3" />
-                                  {file}
-                                  <ExternalLink className="h-3 w-3" />
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {question.systemCheck && (
-                          <div className="p-3 bg-blue-50 rounded-lg">
-                            <div className="flex items-center gap-2">
-                              <Bot className="h-4 w-4 text-blue-600" />
-                              <span className="text-sm font-medium text-blue-900">
-                                System Check: {question.systemCheck === "passed" ? "Passed" : "Failed"}
-                              </span>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     )}
-                  </>
-                );
-              })()}
-            </Card>
-          )}
+
+                    {question.systemCheck && (
+                      <div className="p-3 bg-blue-50 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <Bot className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm font-medium text-blue-900">
+                            System Check: {question.systemCheck === "passed" ? "Passed" : "Failed"}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </Card>
+            );
+          })()}
         </div>
       </div>
     </div>
