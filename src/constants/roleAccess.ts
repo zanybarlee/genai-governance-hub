@@ -1,10 +1,19 @@
 
-export type AccessibleModule = "dashboard" | "policies" | "compliance" | "settings" | "cicd" | "agent" | "monitoring";
-export type Role = "admin" | "developer" | "viewer" | "superuser";
+export type Role = "superuser" | "admin" | "developer" | "auditor" | "manager";
+
+export type AccessibleModule = 
+  | "dashboard" 
+  | "policies" 
+  | "compliance" 
+  | "cicd" 
+  | "agent" 
+  | "audit"
+  | "settings";
 
 export const roleAccess: Record<Role, AccessibleModule[]> = {
-  superuser: ["dashboard", "policies", "compliance", "settings", "cicd", "agent", "monitoring"],
-  admin: ["dashboard", "policies", "compliance", "settings", "cicd", "agent", "monitoring"],
-  developer: ["dashboard", "policies", "compliance", "cicd", "agent", "monitoring"],
-  viewer: ["dashboard", "policies", "compliance", "monitoring"]
+  superuser: ["dashboard", "policies", "compliance", "cicd", "agent", "audit", "settings"],
+  admin: ["dashboard", "policies", "compliance", "cicd", "agent", "audit", "settings"],
+  developer: ["dashboard", "policies", "cicd", "agent"],
+  auditor: ["dashboard", "policies", "compliance", "audit"],
+  manager: ["dashboard", "policies", "compliance", "audit"],
 };

@@ -7,7 +7,8 @@ import {
   GitBranch,
   Bot,
   ChevronDown,
-  LineChart
+  LineChart,
+  Search
 } from "lucide-react";
 import { SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -104,6 +105,18 @@ export const SidebarNavItems = ({
           >
             <GitBranch className="h-4 w-4" />
             {!isCollapsed && <span>CI/CD</span>}
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      )}
+
+      {hasAccess("audit") && (
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            isActive={location.pathname === "/audit"}
+            onClick={() => navigate("/audit")}
+          >
+            <Search className="h-4 w-4" />
+            {!isCollapsed && <span>AI Audit</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
       )}

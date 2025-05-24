@@ -11,6 +11,7 @@ import Policies from "@/pages/Policies";
 import Compliance from "@/pages/Compliance";
 import Settings from "@/pages/Settings";
 import CICD from "@/pages/CICD";
+import Audit from "@/pages/Audit";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ function App() {
               <Route path="/compliance" element={<Compliance />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/cicd" element={<CICD />} />
+              <Route path="/audit" element={<Audit />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <Toaster />
