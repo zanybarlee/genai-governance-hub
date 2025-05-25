@@ -15,6 +15,7 @@ import CICD from "@/pages/CICD";
 import Audit from "@/pages/Audit";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
+import Demo from "@/pages/Demo";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ function App() {
               <Route path="/" element={<Landing />} />
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/demo" element={<Demo />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/policies" element={<Policies />} />
               <Route path="/compliance" element={<Compliance />} />
