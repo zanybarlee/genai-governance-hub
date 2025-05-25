@@ -5,7 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { RoleProvider } from "@/contexts/RoleContext";
 
-import Index from "@/pages/Index";
+import Landing from "@/pages/Landing";
+import Dashboard from "@/pages/Dashboard";
 import NotFound from "@/pages/NotFound";
 import Policies from "@/pages/Policies";
 import Compliance from "@/pages/Compliance";
@@ -22,7 +23,8 @@ function App() {
         <RoleProvider>
           <Router>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<Landing />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/policies" element={<Policies />} />
               <Route path="/compliance" element={<Compliance />} />
               <Route path="/settings" element={<Settings />} />
