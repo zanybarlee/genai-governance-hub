@@ -16,6 +16,14 @@ import Audit from "@/pages/Audit";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
 import Demo from "@/pages/Demo";
+import Features from "@/pages/Features";
+import Pricing from "@/pages/Pricing";
+import Documentation from "@/pages/Documentation";
+import Support from "@/pages/Support";
+import Blog from "@/pages/Blog";
+import About from "@/pages/About";
+import Contact from "@/pages/Contact";
+import Privacy from "@/pages/Privacy";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +38,14 @@ function App() {
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/demo" element={<Demo />} />
+              <Route path="/features" element={<Features />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/documentation" element={<Documentation />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy" element={<Privacy />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/policies" element={<Policies />} />
               <Route path="/compliance" element={<Compliance />} />

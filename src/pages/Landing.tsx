@@ -198,25 +198,25 @@ const Landing = () => {
             <div>
               <h3 className="font-semibold mb-4">Product</h3>
               <div className="space-y-2 text-gray-400">
-                <div>Features</div>
-                <div>Pricing</div>
-                <div>Demo</div>
+                <div><Link to="/features" className="hover:text-white transition-colors">Features</Link></div>
+                <div><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></div>
+                <div><Link to="/demo" className="hover:text-white transition-colors">Demo</Link></div>
               </div>
             </div>
             <div>
               <h3 className="font-semibold mb-4">Resources</h3>
               <div className="space-y-2 text-gray-400">
-                <div>Documentation</div>
-                <div>Support</div>
-                <div>Blog</div>
+                <div><Link to="/documentation" className="hover:text-white transition-colors">Documentation</Link></div>
+                <div><Link to="/support" className="hover:text-white transition-colors">Support</Link></div>
+                <div><Link to="/blog" className="hover:text-white transition-colors">Blog</Link></div>
               </div>
             </div>
             <div>
               <h3 className="font-semibold mb-4">Company</h3>
               <div className="space-y-2 text-gray-400">
-                <div>About</div>
-                <div>Contact</div>
-                <div>Privacy</div>
+                <div><Link to="/about" className="hover:text-white transition-colors">About</Link></div>
+                <div><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></div>
+                <div><Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link></div>
               </div>
             </div>
           </div>
