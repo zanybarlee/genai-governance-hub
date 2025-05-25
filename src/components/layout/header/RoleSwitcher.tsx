@@ -25,8 +25,13 @@ export const RoleSwitcher = () => {
     { id: "superuser", name: "Superuser", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Super" },
     { id: "admin", name: "Administrator", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" },
     { id: "developer", name: "Developer", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Dev" },
-    { id: "auditor", name: "Auditor", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Audit" },
+    { id: "auditor", name: "Internal Auditor", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Audit" },
     { id: "manager", name: "Policy Manager", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Manager" },
+    { id: "system-engineer", name: "System Engineer", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=SysEng" },
+    { id: "audit-manager", name: "Audit Manager", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=AuditMgr" },
+    { id: "it-manager", name: "IT Manager / CIO", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=ITMgr" },
+    { id: "senior-management", name: "Senior Management", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=SeniorMgmt" },
+    { id: "viewer", name: "Viewer", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Viewer" },
   ];
 
   const currentRole = roles.find(r => r.id === role) || roles[2];
