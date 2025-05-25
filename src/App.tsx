@@ -13,6 +13,8 @@ import Compliance from "@/pages/Compliance";
 import Settings from "@/pages/Settings";
 import CICD from "@/pages/CICD";
 import Audit from "@/pages/Audit";
+import SignIn from "@/pages/SignIn";
+import SignUp from "@/pages/SignUp";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,8 @@ function App() {
           <Router>
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/policies" element={<Policies />} />
               <Route path="/compliance" element={<Compliance />} />
