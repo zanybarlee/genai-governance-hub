@@ -22,7 +22,7 @@ const SystemAudit = () => {
                   System Compliance Audit
                 </h1>
                 <p className="text-gray-600 mt-2 animate-fade-in delay-100">
-                  AI-powered system artifact compliance checking for system engineers
+                  AI-powered system artifact compliance checking and reporting
                 </p>
               </div>
 
