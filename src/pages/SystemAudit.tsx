@@ -4,7 +4,6 @@ import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { SystemAuditDashboard } from "@/components/system-audit/SystemAuditDashboard";
 import { SystemComplianceChat } from "@/components/system-audit/SystemComplianceChat";
-import { ArtifactUpload } from "@/components/system-audit/ArtifactUpload";
 import { ComplianceReports } from "@/components/system-audit/ComplianceReports";
 import { SystemScans } from "@/components/system-audit/SystemScans";
 import { ArtifactsManagement } from "@/components/system-audit/ArtifactsManagement";
@@ -29,12 +28,11 @@ const SystemAudit = () => {
               </div>
 
               <Tabs defaultValue="dashboard" className="space-y-6">
-                <TabsList className="grid w-full grid-cols-6">
+                <TabsList className="grid w-full grid-cols-5">
                   <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
                   <TabsTrigger value="scans">System Scans</TabsTrigger>
                   <TabsTrigger value="artifacts-mgmt">Artifacts Mgmt</TabsTrigger>
                   <TabsTrigger value="chat">Compliance Chat</TabsTrigger>
-                  <TabsTrigger value="artifacts">Artifacts</TabsTrigger>
                   <TabsTrigger value="reports">Reports</TabsTrigger>
                 </TabsList>
 
@@ -52,10 +50,6 @@ const SystemAudit = () => {
 
                 <TabsContent value="chat">
                   <SystemComplianceChat />
-                </TabsContent>
-
-                <TabsContent value="artifacts">
-                  <ArtifactUpload />
                 </TabsContent>
 
                 <TabsContent value="reports">
