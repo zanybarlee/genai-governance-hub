@@ -19,16 +19,20 @@ export const SessionList = ({
   onDeleteSession 
 }: SessionListProps) => {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-sm">Saved Sessions ({sessions.length})</CardTitle>
+    <Card className="flex-1 flex flex-col min-h-0">
+      <CardHeader className="flex-shrink-0 pb-3">
+        <CardTitle className="text-sm font-medium">
+          Saved Sessions ({sessions.length})
+        </CardTitle>
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[400px]">
+      <CardContent className="flex-1 min-h-0 p-3 pt-0">
+        <ScrollArea className="h-full">
           {sessions.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">No saved sessions yet</p>
+            <div className="flex items-center justify-center h-32">
+              <p className="text-muted-foreground text-center text-sm">No saved sessions yet</p>
+            </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 pr-2">
               {sessions.map((session) => (
                 <SessionCard
                   key={session.id}

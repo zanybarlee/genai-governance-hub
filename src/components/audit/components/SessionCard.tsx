@@ -30,37 +30,41 @@ export const SessionCard = ({
   };
 
   return (
-    <div className="border rounded-lg p-4 hover:bg-gray-50">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <h4 className="font-medium">{session.name}</h4>
+    <div className="border rounded-lg p-4 hover:bg-gray-50/80 transition-colors">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-3">
+            <h4 className="font-medium text-sm truncate">{session.name}</h4>
             {isCurrentSession && (
-              <Badge variant="secondary" className="text-xs">Current</Badge>
+              <Badge variant="secondary" className="text-xs px-2 py-0.5 flex-shrink-0">
+                Current
+              </Badge>
             )}
           </div>
           
-          <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground mb-3">
-            <div>
-              <span className="font-medium">Audit Type:</span> {getAuditDisplayName(session)}
-            </div>
-            <div>
-              <span className="font-medium">Frameworks:</span> {session.selectedFrameworks.length}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-muted-foreground mb-3">
+            <div className="flex items-center gap-1">
+              <span className="font-medium text-xs">Audit Type:</span> 
+              <span className="text-xs">{getAuditDisplayName(session)}</span>
             </div>
             <div className="flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
-              {formatDate(session.lastUpdated)}
+              <span className="font-medium text-xs">Frameworks:</span> 
+              <span className="text-xs">{session.selectedFrameworks.length}</span>
             </div>
             <div className="flex items-center gap-1">
-              <FileText className="h-3 w-3" />
-              {session.controlDomains.length} domains
+              <Calendar className="h-3 w-3 flex-shrink-0" />
+              <span className="text-xs">{formatDate(session.lastUpdated)}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <FileText className="h-3 w-3 flex-shrink-0" />
+              <span className="text-xs">{session.controlDomains.length} domains</span>
             </div>
           </div>
 
           {session.selectedFrameworks.length > 0 && (
-            <div className="flex flex-wrap gap-1 mb-2">
+            <div className="flex flex-wrap gap-1 mb-3">
               {session.selectedFrameworks.map((framework) => (
-                <Badge key={framework} variant="outline" className="text-xs">
+                <Badge key={framework} variant="outline" className="text-xs px-2 py-0.5">
                   {framework}
                 </Badge>
               ))}
@@ -68,18 +72,24 @@ export const SessionCard = ({
           )}
 
           {session.scopeText && (
-            <p className="text-xs text-gray-600 bg-gray-50 p-2 rounded truncate">
-              {session.scopeText.substring(0, 150)}...
-            </p>
+            <div className="bg-gray-50 p-2 rounded text-xs text-gray-600 border">
+              <p className="line-clamp-2">
+                {session.scopeText.length > 150 
+                  ? `${session.scopeText.substring(0, 150)}...` 
+                  : session.scopeText
+                }
+              </p>
+            </div>
           )}
         </div>
         
-        <div className="flex gap-2 ml-4">
+        <div className="flex flex-col gap-2 flex-shrink-0">
           <Button
             variant="outline"
             size="sm"
             onClick={() => onLoadSession(session)}
             disabled={isCurrentSession}
+            className="w-16 text-xs"
           >
             Load
           </Button>
@@ -87,8 +97,9 @@ export const SessionCard = ({
             variant="outline"
             size="sm"
             onClick={() => onDeleteSession(session.id)}
+            className="w-16 p-2"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3 w-3" />
           </Button>
         </div>
       </div>

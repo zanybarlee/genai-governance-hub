@@ -32,19 +32,25 @@ export const SaveSessionForm = ({ onSaveSession }: SaveSessionFormProps) => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-sm">Save Current Session</CardTitle>
+    <Card className="flex-shrink-0">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-medium">Save Current Session</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="flex gap-2">
+      <CardContent className="pt-0">
+        <div className="flex gap-3">
           <Input
             placeholder="Enter session name..."
             value={newSessionName}
             onChange={(e) => setNewSessionName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSaveCurrentSession()}
+            className="flex-1"
           />
-          <Button onClick={handleSaveCurrentSession}>Save</Button>
+          <Button 
+            onClick={handleSaveCurrentSession}
+            className="flex-shrink-0 px-6"
+          >
+            Save
+          </Button>
         </div>
       </CardContent>
     </Card>

@@ -67,22 +67,24 @@ export const AuditScopeSessionHistory = ({
           Session History
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[80vh]">
-        <DialogHeader>
+      <DialogContent className="max-w-4xl max-h-[85vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <History className="h-5 w-5" />
             Audit Scope Session History
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-4">
-          <SaveSessionForm onSaveSession={handleSaveCurrentSession} />
-          <SessionList
-            sessions={sessions}
-            currentSessionId={currentSessionId}
-            onLoadSession={handleLoadSession}
-            onDeleteSession={handleDeleteSession}
-          />
+        <div className="flex-1 overflow-hidden">
+          <div className="space-y-6 h-full">
+            <SaveSessionForm onSaveSession={handleSaveCurrentSession} />
+            <SessionList
+              sessions={sessions}
+              currentSessionId={currentSessionId}
+              onLoadSession={handleLoadSession}
+              onDeleteSession={handleDeleteSession}
+            />
+          </div>
         </div>
       </DialogContent>
     </Dialog>
