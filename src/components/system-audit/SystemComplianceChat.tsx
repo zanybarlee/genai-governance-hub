@@ -15,17 +15,52 @@ interface Message {
   timestamp?: Date;
 }
 
+const STORAGE_KEYS = {
+  MESSAGES: 'system-audit-chat-messages',
+  SESSION_ID: 'system-audit-session-id'
+};
+
 export const SystemComplianceChat = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      content: "Hello! I'm your System Compliance Assistant. I can help you check system artifacts for compliance issues, review configurations, and provide recommendations. What would you like me to analyze today?",
-      sender: 'bot',
-      timestamp: new Date()
+  const [sessionId, setSessionId] = useState<string>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.SESSION_ID);
+    return saved || `system-engineer-${Date.now()}`;
+  });
+
+  const [messages, setMessages] = useState<Message[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.MESSAGES);
+    if (saved) {
+      try {
+        const parsedMessages = JSON.parse(saved);
+        return parsedMessages.map((msg: any) => ({
+          ...msg,
+          timestamp: msg.timestamp ? new Date(msg.timestamp) : new Date()
+        }));
+      } catch (error) {
+        console.error('Error parsing saved messages:', error);
+      }
     }
-  ]);
+    return [
+      {
+        content: "Hello! I'm your System Compliance Assistant. I can help you check system artifacts for compliance issues, review configurations, and provide recommendations. What would you like me to analyze today?",
+        sender: 'bot',
+        timestamp: new Date()
+      }
+    ];
+  });
+
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Save messages to localStorage whenever messages change
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages));
+  }, [messages]);
+
+  // Save session ID to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.SESSION_ID, sessionId);
+  }, [sessionId]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -73,7 +108,7 @@ export const SystemComplianceChat = () => {
       const response = await query({
         question: input,
         overrideConfig: {
-          sessionId: "system-engineer"
+          sessionId: sessionId
         }
       });
 
@@ -92,14 +127,25 @@ export const SystemComplianceChat = () => {
   };
 
   const handleClear = () => {
-    setMessages([
-      {
-        content: "Hello! I'm your System Compliance Assistant. I can help you check system artifacts for compliance issues, review configurations, and provide recommendations. What would you like me to analyze today?",
-        sender: 'bot',
-        timestamp: new Date()
-      }
-    ]);
-    toast.success("Chat history cleared");
+    const initialMessage = {
+      content: "Hello! I'm your System Compliance Assistant. I can help you check system artifacts for compliance issues, review configurations, and provide recommendations. What would you like me to analyze today?",
+      sender: 'bot' as const,
+      timestamp: new Date()
+    };
+    
+    setMessages([initialMessage]);
+    
+    // Generate new session ID when clearing chat
+    const newSessionId = `system-engineer-${Date.now()}`;
+    setSessionId(newSessionId);
+    
+    toast.success("Chat history cleared and new session started");
+  };
+
+  const handleNewSession = () => {
+    const newSessionId = `system-engineer-${Date.now()}`;
+    setSessionId(newSessionId);
+    toast.success("New session started");
   };
 
   return (
@@ -114,10 +160,18 @@ export const SystemComplianceChat = () => {
             <CardDescription>
               AI-powered assistant for system artifact compliance checking
             </CardDescription>
+            <p className="text-xs text-muted-foreground mt-1">
+              Session: {sessionId}
+            </p>
           </div>
-          <Button variant="outline" onClick={handleClear}>
-            Clear Chat
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleNewSession}>
+              New Session
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleClear}>
+              Clear Chat
+            </Button>
+          </div>
         </div>
       </CardHeader>
 
