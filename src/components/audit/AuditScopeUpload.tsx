@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Upload, 
   FileText, 
@@ -13,10 +14,17 @@ import {
   CheckCircle, 
   Clock,
   AlertCircle,
-  Loader2
+  Loader2,
+  ChevronDown
 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { policyTemplates } from "@/data/policyTemplates";
 
 interface ControlDomain {
   id: string;
@@ -30,16 +38,27 @@ export const AuditScopeUpload = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [auditName, setAuditName] = useState("");
-  const [framework, setFramework] = useState("");
+  const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>([]);
   const [scopeText, setScopeText] = useState("");
   const [controlDomains, setControlDomains] = useState<ControlDomain[]>([]);
   const { toast } = useToast();
 
+  // Get unique categories from policy templates
+  const frameworkCategories = Array.from(new Set(policyTemplates.map(template => template.category)));
+
+  const handleFrameworkToggle = (category: string) => {
+    setSelectedFrameworks(prev => 
+      prev.includes(category) 
+        ? prev.filter(f => f !== category)
+        : [...prev, category]
+    );
+  };
+
   const handleScopeProcessing = async () => {
-    if (!auditName || !framework || !scopeText) {
+    if (!auditName || selectedFrameworks.length === 0 || !scopeText) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required fields",
+        description: "Please fill in all required fields including at least one compliance framework",
         variant: "destructive",
       });
       return;
@@ -100,7 +119,7 @@ export const AuditScopeUpload = () => {
     setIsProcessing(false);
     toast({
       title: "Scope Analysis Complete",
-      description: `Identified ${4} control domains with automated question generation`,
+      description: `Identified ${4} control domains with automated question generation based on ${selectedFrameworks.length} framework${selectedFrameworks.length > 1 ? 's' : ''}`,
     });
   };
 
@@ -144,12 +163,60 @@ export const AuditScopeUpload = () => {
             
             <div>
               <Label htmlFor="framework">Compliance Framework *</Label>
-              <Input 
-                id="framework"
-                value={framework}
-                onChange={(e) => setFramework(e.target.value)}
-                placeholder="e.g., SOC 2, ISO 27001, NIST CSF"
-              />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-between bg-white"
+                    id="framework"
+                  >
+                    <span className="text-left">
+                      {selectedFrameworks.length === 0 
+                        ? "Select Compliance Frameworks" 
+                        : `${selectedFrameworks.length} framework${selectedFrameworks.length > 1 ? 's' : ''} selected`
+                      }
+                    </span>
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-full min-w-[300px] bg-white border shadow-lg z-50">
+                  <div className="p-2 space-y-2 max-h-80 overflow-y-auto">
+                    {frameworkCategories.map((category) => (
+                      <div 
+                        key={category}
+                        className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded-sm cursor-pointer"
+                        onClick={() => handleFrameworkToggle(category)}
+                      >
+                        <Checkbox 
+                          id={category}
+                          checked={selectedFrameworks.includes(category)}
+                          onChange={() => handleFrameworkToggle(category)}
+                        />
+                        <label 
+                          htmlFor={category} 
+                          className="text-sm cursor-pointer flex-1"
+                        >
+                          {category}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              {selectedFrameworks.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {selectedFrameworks.map((framework) => (
+                    <Badge 
+                      key={framework}
+                      variant="secondary"
+                      className="text-xs"
+                    >
+                      {framework}
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
