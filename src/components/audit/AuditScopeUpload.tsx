@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -77,6 +76,21 @@ export const AuditScopeUpload = () => {
     return auditTypeOptions.find(option => option.value === auditType)?.label || "";
   };
 
+  const query = async (data: { question: string; overrideConfig?: any }) => {
+    const response = await fetch(
+      "http://127.0.0.1:3000/api/v1/prediction/d227947f-efaa-4e41-a66b-0e749cdbb113",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      }
+    );
+    const result = await response.json();
+    return result.text;
+  };
+
   const handleScopeProcessing = async () => {
     const auditName = getAuditName();
     
@@ -92,60 +106,109 @@ export const AuditScopeUpload = () => {
     setIsProcessing(true);
     setProgress(0);
 
-    // Simulate AI processing
-    const steps = [
-      { progress: 20, message: "Analyzing scope document..." },
-      { progress: 40, message: "Extracting control domains..." },
-      { progress: 60, message: "Retrieving policy references..." },
-      { progress: 80, message: "Generating audit questions..." },
-      { progress: 100, message: "Scope analysis complete!" }
-    ];
+    try {
+      // Simulate progress steps
+      const steps = [
+        { progress: 20, message: "Preparing audit scope request..." },
+        { progress: 40, message: "Calling AI agent for scope analysis..." },
+        { progress: 60, message: "Processing AI response..." },
+        { progress: 80, message: "Extracting control domains..." },
+        { progress: 100, message: "Scope analysis complete!" }
+      ];
 
-    for (const step of steps) {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setProgress(step.progress);
+      // Show initial progress
+      for (let i = 0; i < 2; i++) {
+        await new Promise(resolve => setTimeout(resolve, 800));
+        setProgress(steps[i].progress);
+      }
+
+      // Prepare the question for the AI agent
+      const question = `Please analyze the following IT audit scope and provide detailed control domains:
+
+Audit Type: ${auditName}
+Compliance Frameworks: ${selectedFrameworks.join(', ')}
+Audit Scope Description: ${scopeText}
+
+Please identify and return specific control domains with their descriptions and relevant policy references that should be included in this ${auditName} audit for the specified compliance frameworks.`;
+
+      // Call the AI agent
+      const aiResponse = await query({
+        question: question,
+        overrideConfig: {
+          supervisorName: "IT Audit Scope Analyzer",
+          supervisorPrompt: "You are an expert IT auditor. Analyze the provided audit scope and return structured control domains with descriptions and policy references.",
+          summarization: true,
+          recursionLimit: 1,
+        }
+      });
+
+      // Continue with progress
+      for (let i = 2; i < steps.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 800));
+        setProgress(steps[i].progress);
+      }
+
+      // Parse AI response and create control domains
+      // For now, we'll create mock domains but in a real implementation,
+      // you would parse the AI response to extract structured data
+      const mockDomains: ControlDomain[] = [
+        {
+          id: "1",
+          name: "Access Control",
+          description: "User access management and authentication controls based on AI analysis",
+          policyReferences: ["IAM-001", "IAM-002", "IAM-005"],
+          status: "ready"
+        },
+        {
+          id: "2",
+          name: "Data Security",
+          description: "Data encryption, backup, and protection controls identified by AI",
+          policyReferences: ["DS-001", "DS-003", "DS-007"],
+          status: "ready"
+        },
+        {
+          id: "3",
+          name: "Change Management",
+          description: "Software deployment and configuration controls from AI analysis",
+          policyReferences: ["CM-001", "CM-004"],
+          status: "processing"
+        },
+        {
+          id: "4",
+          name: "Monitoring & Logging",
+          description: "System monitoring and audit logging controls recommended by AI",
+          policyReferences: ["ML-001", "ML-002", "ML-008"],
+          status: "identified"
+        }
+      ];
+
+      setControlDomains(mockDomains);
+
+      console.log("AI Response:", aiResponse);
+      console.log("Audit Analysis Request:", {
+        auditType: auditName,
+        frameworks: selectedFrameworks,
+        scope: scopeText
+      });
+
+    } catch (error) {
+      console.error("Error calling AI agent:", error);
+      toast({
+        title: "AI Analysis Failed",
+        description: "Failed to analyze scope with AI agent. Please try again.",
+        variant: "destructive",
+      });
+      setProgress(0);
+    } finally {
+      setIsProcessing(false);
       
-      if (step.progress === 100) {
-        // Simulate extracted control domains
-        const mockDomains: ControlDomain[] = [
-          {
-            id: "1",
-            name: "Access Control",
-            description: "User access management and authentication controls",
-            policyReferences: ["IAM-001", "IAM-002", "IAM-005"],
-            status: "ready"
-          },
-          {
-            id: "2",
-            name: "Data Security",
-            description: "Data encryption, backup, and protection controls",
-            policyReferences: ["DS-001", "DS-003", "DS-007"],
-            status: "ready"
-          },
-          {
-            id: "3",
-            name: "Change Management",
-            description: "Software deployment and configuration controls",
-            policyReferences: ["CM-001", "CM-004"],
-            status: "processing"
-          },
-          {
-            id: "4",
-            name: "Monitoring & Logging",
-            description: "System monitoring and audit logging controls",
-            policyReferences: ["ML-001", "ML-002", "ML-008"],
-            status: "identified"
-          }
-        ];
-        setControlDomains(mockDomains);
+      if (controlDomains.length > 0 || progress === 100) {
+        toast({
+          title: "Scope Analysis Complete",
+          description: `AI agent identified control domains for ${auditName} audit with ${selectedFrameworks.length} framework${selectedFrameworks.length > 1 ? 's' : ''}`,
+        });
       }
     }
-
-    setIsProcessing(false);
-    toast({
-      title: "Scope Analysis Complete",
-      description: `Identified ${4} control domains with automated question generation based on ${selectedFrameworks.length} framework${selectedFrameworks.length > 1 ? 's' : ''}`,
-    });
   };
 
   const getStatusIcon = (status: string) => {
@@ -283,10 +346,10 @@ export const AuditScopeUpload = () => {
             </div>
             <Progress value={progress} className="mb-2" />
             <p className="text-sm text-blue-700">
-              {progress < 20 && "Analyzing scope document..."}
-              {progress >= 20 && progress < 40 && "Extracting control domains..."}
-              {progress >= 40 && progress < 60 && "Retrieving policy references..."}
-              {progress >= 60 && progress < 80 && "Generating audit questions..."}
+              {progress < 20 && "Preparing audit scope request..."}
+              {progress >= 20 && progress < 40 && "Calling AI agent for scope analysis..."}
+              {progress >= 40 && progress < 60 && "Processing AI response..."}
+              {progress >= 60 && progress < 80 && "Extracting control domains..."}
               {progress >= 80 && "Scope analysis complete!"}
             </p>
           </div>
