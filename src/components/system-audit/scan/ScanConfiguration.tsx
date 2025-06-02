@@ -1,7 +1,7 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Play, Clock, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { policyTemplates } from "@/data/policyTemplates";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,17 +13,11 @@ import {
 interface ScanConfigurationProps {
   selectedPolicies: string[];
   onPolicyChange: (policyId: string, checked: boolean) => void;
-  selectedArtifacts: string[];
-  isScanning: boolean;
-  onRunScan: () => void;
 }
 
 export const ScanConfiguration = ({
   selectedPolicies,
-  onPolicyChange,
-  selectedArtifacts,
-  isScanning,
-  onRunScan
+  onPolicyChange
 }: ScanConfigurationProps) => {
   return (
     <div className="space-y-4">
@@ -88,24 +82,6 @@ export const ScanConfiguration = ({
           </div>
         )}
       </div>
-
-      <Button 
-        onClick={onRunScan}
-        disabled={isScanning || selectedArtifacts.length === 0 || selectedPolicies.length === 0}
-        className="w-full gap-2"
-      >
-        {isScanning ? (
-          <>
-            <Clock className="h-4 w-4 animate-spin" />
-            Scanning in Progress...
-          </>
-        ) : (
-          <>
-            <Play className="h-4 w-4" />
-            Run Compliance Scan
-          </>
-        )}
-      </Button>
     </div>
   );
 };

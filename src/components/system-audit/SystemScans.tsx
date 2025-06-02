@@ -1,7 +1,8 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Shield, Play, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { Artifact, ScanResult } from "./scan/types";
 import { ScanConfiguration } from "./scan/ScanConfiguration";
@@ -116,9 +117,6 @@ export const SystemScans = () => {
           <ScanConfiguration
             selectedPolicies={selectedPolicies}
             onPolicyChange={handlePolicySelection}
-            selectedArtifacts={selectedArtifacts}
-            isScanning={isScanning}
-            onRunScan={runComplianceScan}
           />
 
           <ArtifactSelection
@@ -126,6 +124,24 @@ export const SystemScans = () => {
             selectedArtifacts={selectedArtifacts}
             onArtifactSelection={handleArtifactSelection}
           />
+
+          <Button 
+            onClick={runComplianceScan}
+            disabled={isScanning || selectedArtifacts.length === 0 || selectedPolicies.length === 0}
+            className="w-full gap-2"
+          >
+            {isScanning ? (
+              <>
+                <Clock className="h-4 w-4 animate-spin" />
+                Scanning in Progress...
+              </>
+            ) : (
+              <>
+                <Play className="h-4 w-4" />
+                Run Compliance Scan
+              </>
+            )}
+          </Button>
         </CardContent>
       </Card>
 
