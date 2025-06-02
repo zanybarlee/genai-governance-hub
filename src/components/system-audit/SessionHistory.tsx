@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,15 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { History, Trash2, MessageSquare, Calendar } from "lucide-react";
 import { toast } from "sonner";
-
-interface SessionData {
-  id: string;
-  name: string;
-  createdAt: Date;
-  lastUpdated: Date;
-  messageCount: number;
-  messages: any[];
-}
+import { SessionData } from './types';
 
 interface SessionHistoryProps {
   currentSessionId: string;
