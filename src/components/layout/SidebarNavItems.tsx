@@ -70,8 +70,8 @@ export const SidebarNavItems = ({
       {hasAccess("dashboard") && (
         <SidebarMenuItem>
           <SidebarMenuButton
-            isActive={location.pathname === "/"}
-            onClick={() => navigate("/")}
+            isActive={location.pathname === "/dashboard"}
+            onClick={() => navigate("/dashboard")}
           >
             <LayoutDashboard className="h-4 w-4" />
             {!isCollapsed && <span>Dashboard</span>}
