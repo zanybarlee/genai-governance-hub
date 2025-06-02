@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,9 +9,12 @@ import {
   User,
   AlertTriangle,
   CheckCircle,
-  BarChart3
+  BarChart3,
+  Bot
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { executionSessionStorage } from "./utils/executionSessionStorage";
+import { AuditExecutionSession } from "./hooks/useAuditExecution";
 
 interface AuditReport {
   id: string;
@@ -33,8 +35,11 @@ interface AuditReport {
     passed: number;
     failed: number;
   };
+  executionResults?: any[];
+  aiResponse?: string;
 }
 
+// Keep existing mock reports
 const mockReports: AuditReport[] = [
   {
     id: "1",
@@ -70,6 +75,50 @@ const mockReports: AuditReport[] = [
 
 export const AuditReports = () => {
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
+  const [executionSessions, setExecutionSessions] = useState<AuditExecutionSession[]>([]);
+  const [allReports, setAllReports] = useState<AuditReport[]>(mockReports);
+
+  useEffect(() => {
+    // Load execution sessions and convert them to reports
+    const sessions = executionSessionStorage.loadSessions();
+    setExecutionSessions(sessions);
+
+    // Convert execution sessions to audit reports
+    const executionReports: AuditReport[] = sessions
+      .filter(session => session.executionResults && session.executionResults.length > 0)
+      .map(session => {
+        const findings = session.executionResults.reduce((acc, result) => {
+          acc.total += result.findings.length;
+          switch (result.riskLevel) {
+            case 'critical': acc.critical += result.findings.length; break;
+            case 'high': acc.high += result.findings.length; break;
+            case 'medium': acc.medium += result.findings.length; break;
+            case 'low': acc.low += result.findings.length; break;
+          }
+          return acc;
+        }, { total: 0, critical: 0, high: 0, medium: 0, low: 0 });
+
+        return {
+          id: `execution-${session.id}`,
+          name: session.name,
+          framework: "AI Audit Execution",
+          auditor: "AI Agent",
+          completedDate: session.lastUpdated.toLocaleDateString(),
+          status: "final" as const,
+          findings,
+          controls: {
+            total: session.selectedDomains.length,
+            passed: session.executionResults.filter(r => r.status === 'completed').length,
+            failed: session.executionResults.filter(r => r.status === 'failed').length
+          },
+          executionResults: session.executionResults,
+          aiResponse: session.aiResponse
+        };
+      });
+
+    // Combine mock reports with execution reports
+    setAllReports([...executionReports, ...mockReports]);
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -99,6 +148,10 @@ export const AuditReports = () => {
     }
   };
 
+  const isAIExecutionReport = (report: AuditReport) => {
+    return report.framework === "AI Audit Execution";
+  };
+
   return (
     <div className="space-y-6">
       {/* Summary Stats */}
@@ -110,7 +163,7 @@ export const AuditReports = () => {
             </div>
             <div>
               <p className="text-sm text-gray-600">Total Reports</p>
-              <p className="text-2xl font-bold">{mockReports.length}</p>
+              <p className="text-2xl font-bold">{allReports.length}</p>
             </div>
           </div>
         </Card>
@@ -122,7 +175,7 @@ export const AuditReports = () => {
             </div>
             <div>
               <p className="text-sm text-gray-600">Final Reports</p>
-              <p className="text-2xl font-bold">{mockReports.filter(r => r.status === 'final').length}</p>
+              <p className="text-2xl font-bold">{allReports.filter(r => r.status === 'final').length}</p>
             </div>
           </div>
         </Card>
@@ -135,7 +188,7 @@ export const AuditReports = () => {
             <div>
               <p className="text-sm text-gray-600">Critical Findings</p>
               <p className="text-2xl font-bold">
-                {mockReports.reduce((sum, r) => sum + r.findings.critical, 0)}
+                {allReports.reduce((sum, r) => sum + r.findings.critical, 0)}
               </p>
             </div>
           </div>
@@ -149,7 +202,7 @@ export const AuditReports = () => {
             <div>
               <p className="text-sm text-gray-600">Controls Tested</p>
               <p className="text-2xl font-bold">
-                {mockReports.reduce((sum, r) => sum + r.controls.total, 0)}
+                {allReports.reduce((sum, r) => sum + r.controls.total, 0)}
               </p>
             </div>
           </div>
@@ -161,7 +214,7 @@ export const AuditReports = () => {
         <h2 className="text-xl font-semibold text-primary-900 mb-6">Audit Reports</h2>
         
         <div className="space-y-4">
-          {mockReports.map((report) => (
+          {allReports.map((report) => (
             <div 
               key={report.id} 
               className="p-6 border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
@@ -169,11 +222,19 @@ export const AuditReports = () => {
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
+                  {isAIExecutionReport(report) && (
+                    <Bot className="h-5 w-5 text-blue-600" />
+                  )}
                   <h3 className="text-lg font-semibold text-primary-900">{report.name}</h3>
                   <Badge className={getStatusColor(report.status)}>
                     {getStatusIcon(report.status)}
                     <span className="ml-1 capitalize">{report.status}</span>
                   </Badge>
+                  {isAIExecutionReport(report) && (
+                    <Badge className="bg-blue-100 text-blue-800">
+                      AI Generated
+                    </Badge>
+                  )}
                 </div>
                 
                 <div className="flex gap-2">
@@ -196,7 +257,11 @@ export const AuditReports = () => {
                 <div>
                   <p className="text-sm text-gray-600">Auditor</p>
                   <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-gray-400" />
+                    {isAIExecutionReport(report) ? (
+                      <Bot className="h-4 w-4 text-blue-600" />
+                    ) : (
+                      <User className="h-4 w-4 text-gray-400" />
+                    )}
                     <span className="font-medium">{report.auditor}</span>
                   </div>
                 </div>
@@ -264,6 +329,13 @@ export const AuditReports = () => {
                 <div className="mt-6 pt-6 border-t">
                   <h4 className="font-semibold text-primary-900 mb-4">Report Preview</h4>
                   <div className="space-y-4 text-sm">
+                    {isAIExecutionReport(report) && report.aiResponse && (
+                      <div className="p-4 bg-blue-50 border border-blue-200 rounded">
+                        <h5 className="font-medium mb-2 text-blue-900">AI Analysis Response</h5>
+                        <p className="text-blue-800 whitespace-pre-wrap">{report.aiResponse}</p>
+                      </div>
+                    )}
+                    
                     <div className="p-4 bg-white border rounded">
                       <h5 className="font-medium mb-2">Executive Summary</h5>
                       <p className="text-gray-600">
@@ -275,25 +347,66 @@ export const AuditReports = () => {
                       </p>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="p-4 bg-white border rounded">
-                        <h5 className="font-medium mb-2">Key Findings</h5>
-                        <ul className="space-y-1 text-gray-600">
-                          <li>• User access review process gaps</li>
-                          <li>• Encryption policy compliance issues</li>
-                          <li>• Incident response documentation</li>
-                        </ul>
+                    {isAIExecutionReport(report) && report.executionResults && (
+                      <div className="space-y-4">
+                        <h5 className="font-medium">Detailed Findings by Domain</h5>
+                        {report.executionResults.map((result, index) => (
+                          <div key={index} className="p-4 bg-white border rounded">
+                            <div className="flex items-center justify-between mb-2">
+                              <h6 className="font-medium">{result.domainName}</h6>
+                              <Badge className={`${
+                                result.riskLevel === 'critical' ? 'bg-red-100 text-red-800' :
+                                result.riskLevel === 'high' ? 'bg-orange-100 text-orange-800' :
+                                result.riskLevel === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-green-100 text-green-800'
+                              }`}>
+                                {result.riskLevel} Risk
+                              </Badge>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <p className="font-medium text-sm mb-1">Findings:</p>
+                                <ul className="text-xs text-gray-600 space-y-1">
+                                  {result.findings.map((finding, idx) => (
+                                    <li key={idx}>• {finding}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                              <div>
+                                <p className="font-medium text-sm mb-1">Recommendations:</p>
+                                <ul className="text-xs text-gray-600 space-y-1">
+                                  {result.recommendations.map((rec, idx) => (
+                                    <li key={idx}>• {rec}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                      
-                      <div className="p-4 bg-white border rounded">
-                        <h5 className="font-medium mb-2">Recommendations</h5>
-                        <ul className="space-y-1 text-gray-600">
-                          <li>• Implement automated access reviews</li>
-                          <li>• Update encryption standards</li>
-                          <li>• Enhance monitoring controls</li>
-                        </ul>
+                    )}
+
+                    {!isAIExecutionReport(report) && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 bg-white border rounded">
+                          <h5 className="font-medium mb-2">Key Findings</h5>
+                          <ul className="space-y-1 text-gray-600">
+                            <li>• User access review process gaps</li>
+                            <li>• Encryption policy compliance issues</li>
+                            <li>• Incident response documentation</li>
+                          </ul>
+                        </div>
+                        
+                        <div className="p-4 bg-white border rounded">
+                          <h5 className="font-medium mb-2">Recommendations</h5>
+                          <ul className="space-y-1 text-gray-600">
+                            <li>• Implement automated access reviews</li>
+                            <li>• Update encryption standards</li>
+                            <li>• Enhance monitoring controls</li>
+                          </ul>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               )}
