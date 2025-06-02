@@ -33,14 +33,78 @@ export const ReportDetails = ({ report }: ReportDetailsProps) => {
     return report.framework === "AI Audit Execution";
   };
 
+  const formatMarkdownContent = (text: string) => {
+    const lines = text.split('\n');
+    const formattedLines: JSX.Element[] = [];
+    
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+      
+      if (trimmedLine.startsWith('### ')) {
+        // Main heading
+        formattedLines.push(
+          <h3 key={index} className="text-lg font-bold text-blue-800 mt-6 mb-3 border-b border-blue-200 pb-2">
+            {trimmedLine.replace('### ', '')}
+          </h3>
+        );
+      } else if (trimmedLine.startsWith('#### ')) {
+        // Sub heading
+        formattedLines.push(
+          <h4 key={index} className="text-base font-semibold text-blue-700 mt-4 mb-2">
+            {trimmedLine.replace('#### ', '')}
+          </h4>
+        );
+      } else if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**')) {
+        // Bold section headers
+        formattedLines.push(
+          <div key={index} className="font-semibold text-blue-900 mt-3 mb-2">
+            {trimmedLine.replace(/\*\*/g, '')}
+          </div>
+        );
+      } else if (trimmedLine.startsWith('- **') && trimmedLine.includes('**:')) {
+        // Bold bullet points with descriptions
+        const parts = trimmedLine.match(/^- \*\*(.*?)\*\*: (.*)$/);
+        if (parts) {
+          formattedLines.push(
+            <div key={index} className="ml-4 mb-2">
+              <span className="font-semibold text-blue-800">• {parts[1]}:</span>
+              <span className="ml-2 text-gray-700">{parts[2]}</span>
+            </div>
+          );
+        }
+      } else if (trimmedLine.startsWith('- ')) {
+        // Regular bullet points
+        formattedLines.push(
+          <div key={index} className="ml-4 mb-1 text-gray-700">
+            • {trimmedLine.replace('- ', '')}
+          </div>
+        );
+      } else if (trimmedLine && !trimmedLine.startsWith('#')) {
+        // Regular text
+        formattedLines.push(
+          <p key={index} className="mb-2 text-gray-700 leading-relaxed">
+            {trimmedLine}
+          </p>
+        );
+      }
+    });
+    
+    return formattedLines;
+  };
+
   return (
     <div className="mt-6 pt-6 border-t">
       <h4 className="font-semibold text-primary-900 mb-4">Report Preview</h4>
       <div className="space-y-4 text-sm">
         {isAIExecutionReport(report) && report.aiResponse && (
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded">
-            <h5 className="font-medium mb-2 text-blue-900">AI Analysis Response</h5>
-            <p className="text-blue-800 whitespace-pre-wrap">{report.aiResponse}</p>
+          <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+            <h5 className="font-semibold mb-4 text-blue-900 flex items-center gap-2">
+              <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+              AI Analysis Response
+            </h5>
+            <div className="prose prose-sm max-w-none">
+              {formatMarkdownContent(report.aiResponse)}
+            </div>
           </div>
         )}
         
