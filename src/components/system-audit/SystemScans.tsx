@@ -19,7 +19,7 @@ export const SystemScans = () => {
   ]);
 
   const [selectedArtifacts, setSelectedArtifacts] = useState<string[]>([]);
-  const [selectedPolicy, setSelectedPolicy] = useState<string>("");
+  const [selectedPolicies, setSelectedPolicies] = useState<string[]>([]);
   const [isScanning, setIsScanning] = useState(false);
   const [scanResults, setScanResults] = useState<ScanResult[]>([]);
 
@@ -31,9 +31,17 @@ export const SystemScans = () => {
     }
   };
 
+  const handlePolicySelection = (policyId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedPolicies(prev => [...prev, policyId]);
+    } else {
+      setSelectedPolicies(prev => prev.filter(id => id !== policyId));
+    }
+  };
+
   const runComplianceScan = async () => {
-    if (selectedArtifacts.length === 0 || !selectedPolicy) {
-      toast.error("Please select artifacts and a policy to scan against");
+    if (selectedArtifacts.length === 0 || selectedPolicies.length === 0) {
+      toast.error("Please select artifacts and policies to scan against");
       return;
     }
 
@@ -49,23 +57,30 @@ export const SystemScans = () => {
 
       const results: ScanResult[] = [];
 
+      // Run scans for each artifact against each selected policy
       for (const artifactId of selectedArtifacts) {
-        const result = await runComplianceScanForArtifact(artifactId, artifacts, selectedPolicy);
-        results.push(result);
+        for (const policyId of selectedPolicies) {
+          const result = await runComplianceScanForArtifact(artifactId, artifacts, policyId);
+          results.push(result);
 
-        // Update artifact with scan results
+          // Add delay between scans to simulate processing
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        // Update artifact with aggregate scan results (using worst score)
+        const artifactResults = results.filter(r => r.artifactId === artifactId);
+        const worstScore = Math.min(...artifactResults.map(r => r.score));
+        const worstStatus = worstScore >= 90 ? 'compliant' : worstScore >= 70 ? 'warning' : 'failed';
+
         setArtifacts(prev => prev.map(a => 
           a.id === artifactId 
-            ? { ...a, status: result.status, score: result.score, lastScan: new Date() }
+            ? { ...a, status: worstStatus, score: worstScore, lastScan: new Date() }
             : a
         ));
-
-        // Add delay between scans to simulate processing
-        await new Promise(resolve => setTimeout(resolve, 2000));
       }
 
       setScanResults(prev => [...prev, ...results]);
-      toast.success(`Compliance scan completed for ${selectedArtifacts.length} artifacts`);
+      toast.success(`Compliance scan completed for ${selectedArtifacts.length} artifacts against ${selectedPolicies.length} policies`);
       
     } catch (error) {
       console.error('Scan error:', error);
@@ -80,7 +95,7 @@ export const SystemScans = () => {
     } finally {
       setIsScanning(false);
       setSelectedArtifacts([]);
-      setSelectedPolicy("");
+      setSelectedPolicies([]);
     }
   };
 
@@ -99,8 +114,8 @@ export const SystemScans = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <ScanConfiguration
-            selectedPolicy={selectedPolicy}
-            onPolicyChange={setSelectedPolicy}
+            selectedPolicies={selectedPolicies}
+            onPolicyChange={handlePolicySelection}
             selectedArtifacts={selectedArtifacts}
             isScanning={isScanning}
             onRunScan={runComplianceScan}
