@@ -1,8 +1,14 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Play, Clock } from "lucide-react";
+import { Play, Clock, ChevronDown } from "lucide-react";
 import { policyTemplates } from "@/data/policyTemplates";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ScanConfigurationProps {
   selectedPolicies: string[];
@@ -23,24 +29,64 @@ export const ScanConfiguration = ({
     <div className="space-y-4">
       <div>
         <label className="text-sm font-medium mb-2 block">
-          Select Policies ({selectedPolicies.length} selected)
+          Compliance Policies *
         </label>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-md p-2">
-          {policyTemplates.map((policy) => (
-            <div key={policy.id} className="flex items-start space-x-2 p-2 border rounded">
-              <Checkbox
-                id={policy.id}
-                checked={selectedPolicies.includes(policy.id)}
-                onCheckedChange={(checked) => onPolicyChange(policy.id, checked as boolean)}
-              />
-              <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm">{policy.name}</div>
-                <div className="text-xs text-gray-500">{policy.description}</div>
-                <div className="text-xs text-blue-600">{policy.category}</div>
-              </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="outline" 
+              className="w-full justify-between bg-white"
+            >
+              <span className="text-left">
+                {selectedPolicies.length === 0 
+                  ? "Select Compliance Policies" 
+                  : `${selectedPolicies.length} ${selectedPolicies.length === 1 ? 'policy' : 'policies'} selected`
+                }
+              </span>
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-full min-w-[500px] bg-white border shadow-lg z-50">
+            <div className="p-2 space-y-2 max-h-80 overflow-y-auto">
+              {policyTemplates.map((policy) => (
+                <div 
+                  key={policy.id}
+                  className="flex items-start space-x-2 p-2 hover:bg-gray-50 rounded-sm cursor-pointer"
+                  onClick={() => onPolicyChange(policy.id, !selectedPolicies.includes(policy.id))}
+                >
+                  <Checkbox 
+                    id={policy.id}
+                    checked={selectedPolicies.includes(policy.id)}
+                    onChange={() => onPolicyChange(policy.id, !selectedPolicies.includes(policy.id))}
+                    className="mt-1"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-sm">{policy.name}</div>
+                    <div className="text-xs text-gray-500 mt-1">{policy.description}</div>
+                    <div className="text-xs text-blue-600 mt-1">{policy.category}</div>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        
+        {selectedPolicies.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1">
+            {selectedPolicies.map((policyId) => {
+              const policy = policyTemplates.find(p => p.id === policyId);
+              return (
+                <Badge 
+                  key={policyId}
+                  variant="secondary"
+                  className="text-xs"
+                >
+                  {policy?.name}
+                </Badge>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <Button 
