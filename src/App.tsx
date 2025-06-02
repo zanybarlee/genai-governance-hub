@@ -13,6 +13,7 @@ import Compliance from "@/pages/Compliance";
 import Settings from "@/pages/Settings";
 import CICD from "@/pages/CICD";
 import Audit from "@/pages/Audit";
+import SystemAudit from "@/pages/SystemAudit";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
 import Demo from "@/pages/Demo";
@@ -52,6 +53,7 @@ function App() {
               <Route path="/settings" element={<Settings />} />
               <Route path="/cicd" element={<CICD />} />
               <Route path="/audit" element={<Audit />} />
+              <Route path="/system-audit" element={<SystemAudit />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <Toaster />

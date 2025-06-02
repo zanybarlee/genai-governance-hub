@@ -7,7 +7,8 @@ import {
   Bot,
   ChevronDown,
   LineChart,
-  Search
+  Search,
+  Wrench
 } from "lucide-react";
 import { SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -123,6 +124,18 @@ export const SidebarNavItems = ({
           >
             <Search className="h-4 w-4" />
             {!isCollapsed && <span>AI Audit</span>}
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      )}
+
+      {hasAccess("system-audit") && (
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            isActive={location.pathname === "/system-audit"}
+            onClick={() => navigate("/system-audit")}
+          >
+            <Wrench className="h-4 w-4" />
+            {!isCollapsed && <span>System Audit</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>
       )}
