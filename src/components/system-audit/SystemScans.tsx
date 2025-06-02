@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Play, FileText, CheckCircle, AlertTriangle, XCircle, Clock, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { SystemComplianceApi } from "@/services/systemComplianceApi";
+import { policyTemplates } from "@/data/policyTemplates";
 
 interface Artifact {
   id: string;
@@ -17,13 +18,6 @@ interface Artifact {
   status: 'idle' | 'scanning' | 'compliant' | 'warning' | 'failed';
   score?: number;
   lastScan?: Date;
-}
-
-interface Policy {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
 }
 
 interface ScanResult {
@@ -42,14 +36,6 @@ export const SystemScans = () => {
     { id: '3', name: 'security-policies.yaml', type: 'Security', status: 'idle' },
     { id: '4', name: 'network-config.xml', type: 'Network', status: 'idle' },
     { id: '5', name: 'auth-service.py', type: 'Code', status: 'idle' }
-  ]);
-
-  const [policies] = useState<Policy[]>([
-    { id: 'p1', name: 'Security Configuration Standards', category: 'Security', description: 'Validates security configuration compliance' },
-    { id: 'p2', name: 'Data Protection Policy', category: 'Privacy', description: 'Ensures data protection and privacy compliance' },
-    { id: 'p3', name: 'Infrastructure Standards', category: 'Infrastructure', description: 'Infrastructure configuration compliance' },
-    { id: 'p4', name: 'Access Control Policy', category: 'Security', description: 'User access and authentication standards' },
-    { id: 'p5', name: 'Network Security Policy', category: 'Network', description: 'Network configuration and security standards' }
   ]);
 
   const [selectedArtifacts, setSelectedArtifacts] = useState<string[]>([]);
@@ -72,7 +58,7 @@ export const SystemScans = () => {
     }
 
     setIsScanning(true);
-    const policy = policies.find(p => p.id === selectedPolicy);
+    const policy = policyTemplates.find(p => p.id === selectedPolicy);
     
     try {
       // Update artifact status to scanning
@@ -214,12 +200,13 @@ Provide detailed findings and actionable recommendations for remediation.`;
               <SelectTrigger>
                 <SelectValue placeholder="Choose a policy to scan against" />
               </SelectTrigger>
-              <SelectContent>
-                {policies.map((policy) => (
-                  <SelectItem key={policy.id} value={policy.id}>
+              <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
+                {policyTemplates.map((policy) => (
+                  <SelectItem key={policy.id} value={policy.id} className="hover:bg-gray-100">
                     <div>
                       <div className="font-medium">{policy.name}</div>
                       <div className="text-xs text-gray-500">{policy.description}</div>
+                      <div className="text-xs text-blue-600">{policy.category}</div>
                     </div>
                   </SelectItem>
                 ))}
@@ -275,7 +262,7 @@ Provide detailed findings and actionable recommendations for remediation.`;
         </CardContent>
       </Card>
 
-      {/* Scan Results */}
+      {/* System Artifacts */}
       <Card>
         <CardHeader>
           <CardTitle>System Artifacts</CardTitle>
