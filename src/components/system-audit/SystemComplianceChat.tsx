@@ -8,11 +8,21 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Send, Bot, User, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import ReactMarkdown from 'react-markdown';
+import { SessionHistory } from './SessionHistory';
 
 interface Message {
   content: string;
   sender: 'user' | 'bot';
   timestamp?: Date;
+}
+
+interface SessionData {
+  id: string;
+  name: string;
+  createdAt: Date;
+  lastUpdated: Date;
+  messageCount: number;
+  messages: any[];
 }
 
 const STORAGE_KEYS = {
@@ -145,7 +155,29 @@ export const SystemComplianceChat = () => {
   const handleNewSession = () => {
     const newSessionId = `system-engineer-${Date.now()}`;
     setSessionId(newSessionId);
+    
+    // Clear current messages and start fresh
+    const initialMessage = {
+      content: "Hello! I'm your System Compliance Assistant. I can help you check system artifacts for compliance issues, review configurations, and provide recommendations. What would you like me to analyze today?",
+      sender: 'bot' as const,
+      timestamp: new Date()
+    };
+    setMessages([initialMessage]);
+    
     toast.success("New session started");
+  };
+
+  const handleLoadSession = (sessionData: SessionData) => {
+    setSessionId(sessionData.id);
+    setMessages(sessionData.messages.map((msg: any) => ({
+      ...msg,
+      timestamp: new Date(msg.timestamp)
+    })));
+  };
+
+  const handleDeleteSession = (sessionId: string) => {
+    // Session deletion is handled in SessionHistory component
+    // This is just a callback for any additional cleanup if needed
   };
 
   return (
@@ -165,6 +197,11 @@ export const SystemComplianceChat = () => {
             </p>
           </div>
           <div className="flex gap-2">
+            <SessionHistory
+              currentSessionId={sessionId}
+              onLoadSession={handleLoadSession}
+              onDeleteSession={handleDeleteSession}
+            />
             <Button variant="outline" size="sm" onClick={handleNewSession}>
               New Session
             </Button>
