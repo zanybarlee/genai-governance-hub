@@ -1,10 +1,10 @@
 
 import { StatCard } from "@/components/dashboard/StatCard";
-import { Shield, Book, Users, AlertTriangle } from "lucide-react";
+import { Shield, Book, Users, AlertTriangle, Bot } from "lucide-react";
 
 export const StatCards = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
       <StatCard
         title="Active Policies"
         value="24"
@@ -32,6 +32,21 @@ export const StatCards = () => {
             { label: "Critical policies", value: "100%" },
             { label: "Standard policies", value: "96%" },
             { label: "Guidelines", value: "98%" }
+          ]
+        }}
+      />
+      <StatCard
+        title="AI Audits"
+        value="8"
+        icon={<Bot className="h-6 w-6 text-blue-500" />}
+        trend={{ value: 2, positive: true }}
+        className="animate-fade-in delay-225"
+        details={{
+          description: "AI-powered audit executions completed",
+          items: [
+            { label: "This month", value: "3" },
+            { label: "Critical findings", value: "5" },
+            { label: "Auto-resolved", value: "12" }
           ]
         }}
       />

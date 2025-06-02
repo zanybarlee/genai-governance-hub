@@ -1,4 +1,3 @@
-
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
@@ -13,6 +12,7 @@ import { CICDChart } from "@/components/dashboard/CICDChart";
 import { StatCards } from "@/components/dashboard/StatCards";
 import { ResourceAccessMap } from "@/components/dashboard/ResourceAccessMap";
 import { policyScores } from "@/data/policyScores";
+import { AIAuditSummary } from "@/components/dashboard/AIAuditSummary";
 
 const Dashboard = () => {
   const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
@@ -58,6 +58,7 @@ const Dashboard = () => {
                     scores={policyScores} 
                     onPolicyClick={handlePolicyClick}
                   />
+                  <AIAuditSummary />
                   <ActivityFeed />
                 </div>
               </div>
