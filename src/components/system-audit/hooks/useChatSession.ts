@@ -113,7 +113,68 @@ export const useChatSession = () => {
     toast.success("Chat history cleared and new session started");
   };
 
+  const saveCurrentSession = (sessionName: string) => {
+    const SESSIONS_STORAGE_KEY = 'system-audit-sessions';
+    
+    try {
+      const existingSessions = JSON.parse(localStorage.getItem(SESSIONS_STORAGE_KEY) || '[]');
+      
+      const sessionData: SessionData = {
+        id: sessionId,
+        name: sessionName,
+        createdAt: new Date(),
+        lastUpdated: new Date(),
+        messageCount: messages.length,
+        messages: messages
+      };
+
+      const existingIndex = existingSessions.findIndex((s: SessionData) => s.id === sessionData.id);
+      let updatedSessions;
+      
+      if (existingIndex >= 0) {
+        updatedSessions = [...existingSessions];
+        updatedSessions[existingIndex] = sessionData;
+      } else {
+        updatedSessions = [sessionData, ...existingSessions];
+      }
+      
+      localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(updatedSessions));
+      return true;
+    } catch (error) {
+      console.error('Error saving session:', error);
+      return false;
+    }
+  };
+
   const startNewSession = () => {
+    // Check if current session has meaningful content (more than just the initial bot message)
+    const hasUserMessages = messages.some(msg => msg.sender === 'user');
+    
+    if (hasUserMessages) {
+      // Prompt user to save current session
+      const shouldSave = window.confirm(
+        "Would you like to save the current session before starting a new one?"
+      );
+      
+      if (shouldSave) {
+        const sessionName = window.prompt("Enter a name for this session:");
+        if (sessionName && sessionName.trim()) {
+          const saved = saveCurrentSession(sessionName.trim());
+          if (saved) {
+            toast.success("Session saved successfully");
+          } else {
+            toast.error("Failed to save session");
+          }
+        } else if (sessionName !== null) {
+          // User clicked OK but didn't enter a name
+          toast.error("Session name is required");
+          return; // Don't start new session
+        }
+        // If user clicked Cancel on the name prompt, still proceed to new session
+      }
+    }
+
+    // Start new session
     const newSessionId = `system-engineer-${Date.now()}`;
     setSessionId(newSessionId);
     
