@@ -179,10 +179,10 @@ export const AuditScopeUpload = () => {
             <div>
               <Label htmlFor="auditType">Audit Type *</Label>
               <Select value={auditType} onValueChange={setAuditType}>
-                <SelectTrigger id="auditType">
+                <SelectTrigger id="auditType" className="bg-white">
                   <SelectValue placeholder="Select audit type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   {auditTypeOptions.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
