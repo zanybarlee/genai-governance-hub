@@ -7,6 +7,7 @@ import { SystemComplianceChat } from "@/components/system-audit/SystemCompliance
 import { ArtifactUpload } from "@/components/system-audit/ArtifactUpload";
 import { ComplianceReports } from "@/components/system-audit/ComplianceReports";
 import { SystemScans } from "@/components/system-audit/SystemScans";
+import { ArtifactsManagement } from "@/components/system-audit/ArtifactsManagement";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const SystemAudit = () => {
@@ -28,9 +29,10 @@ const SystemAudit = () => {
               </div>
 
               <Tabs defaultValue="dashboard" className="space-y-6">
-                <TabsList className="grid w-full grid-cols-5">
+                <TabsList className="grid w-full grid-cols-6">
                   <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
                   <TabsTrigger value="scans">System Scans</TabsTrigger>
+                  <TabsTrigger value="artifacts-mgmt">Artifacts Mgmt</TabsTrigger>
                   <TabsTrigger value="chat">Compliance Chat</TabsTrigger>
                   <TabsTrigger value="artifacts">Artifacts</TabsTrigger>
                   <TabsTrigger value="reports">Reports</TabsTrigger>
@@ -42,6 +44,10 @@ const SystemAudit = () => {
 
                 <TabsContent value="scans">
                   <SystemScans />
+                </TabsContent>
+
+                <TabsContent value="artifacts-mgmt">
+                  <ArtifactsManagement />
                 </TabsContent>
 
                 <TabsContent value="chat">

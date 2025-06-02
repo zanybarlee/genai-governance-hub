@@ -9,16 +9,22 @@ import { ScanConfiguration } from "./scan/ScanConfiguration";
 import { ArtifactSelection } from "./scan/ArtifactSelection";
 import { SystemArtifactsDisplay } from "./scan/SystemArtifactsDisplay";
 import { runComplianceScanForArtifact } from "./scan/scanUtils";
+import { DEFAULT_ARTIFACTS } from "./artifacts/types";
 
 export const SystemScans = () => {
-  const [artifacts, setArtifacts] = useState<Artifact[]>([
-    { id: '1', name: 'api-gateway-config.json', type: 'Configuration', status: 'idle' },
-    { id: '2', name: 'database-schema.sql', type: 'Database', status: 'idle' },
-    { id: '3', name: 'security-policies.yaml', type: 'Security', status: 'idle' },
-    { id: '4', name: 'network-config.xml', type: 'Network', status: 'idle' },
-    { id: '5', name: 'auth-service.py', type: 'Code', status: 'idle' }
-  ]);
+  // Convert managed artifacts to scan artifacts format
+  const convertToScanArtifacts = (): Artifact[] => {
+    return DEFAULT_ARTIFACTS.map(managedArtifact => ({
+      id: managedArtifact.id,
+      name: managedArtifact.name,
+      type: managedArtifact.type,
+      status: managedArtifact.status || 'idle',
+      score: managedArtifact.score,
+      lastScan: managedArtifact.lastScan
+    }));
+  };
 
+  const [artifacts, setArtifacts] = useState<Artifact[]>(convertToScanArtifacts());
   const [selectedArtifacts, setSelectedArtifacts] = useState<string[]>([]);
   const [selectedPolicies, setSelectedPolicies] = useState<string[]>([]);
   const [isScanning, setIsScanning] = useState(false);
