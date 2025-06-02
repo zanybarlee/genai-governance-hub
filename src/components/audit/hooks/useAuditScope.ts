@@ -33,7 +33,7 @@ export const useAuditScope = () => {
     return auditTypeOptions.find(option => option.value === auditType)?.label || "";
   };
 
-  const query = async (data: { question: string; overrideConfig?: any }) => {
+  const query = async (data: { question: string; overrideConfig?: any; sessionId?: string }) => {
     const response = await fetch(
       "http://127.0.0.1:3000/api/v1/prediction/d227947f-efaa-4e41-a66b-0e749cdbb113",
       {
@@ -144,6 +144,7 @@ Please identify and return specific control domains with their descriptions and 
 
       const aiResponse = await query({
         question: question,
+        sessionId: currentSessionId,
         overrideConfig: {
           supervisorName: "IT Audit Scope Analyzer",
           supervisorPrompt: "You are an expert IT auditor. Analyze the provided audit scope and return structured control domains with descriptions and policy references.",
@@ -196,7 +197,8 @@ Please identify and return specific control domains with their descriptions and 
       console.log("Audit Analysis Request:", {
         auditType: auditName,
         frameworks: selectedFrameworks,
-        scope: scopeText
+        scope: scopeText,
+        sessionId: currentSessionId
       });
 
       const autoSaveSessionData: AuditScopeSession = {
