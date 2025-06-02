@@ -16,7 +16,7 @@ import {
   Loader2,
   ChevronDown
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
   DropdownMenu,
@@ -31,14 +31,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { policyTemplates } from "@/data/policyTemplates";
-
-interface ControlDomain {
-  id: string;
-  name: string;
-  description: string;
-  policyReferences: string[];
-  status: "identified" | "processing" | "ready";
-}
+import { AuditScopeSessionHistory } from "./AuditScopeSessionHistory";
+import { AuditScopeSession, ControlDomain } from "./types";
 
 const auditTypeOptions = [
   { value: "annually", label: "Annually" },
@@ -48,6 +42,8 @@ const auditTypeOptions = [
   { value: "custom", label: "Custom" }
 ];
 
+const AUDIT_SESSIONS_STORAGE_KEY = 'audit-scope-sessions';
+
 export const AuditScopeUpload = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -56,6 +52,10 @@ export const AuditScopeUpload = () => {
   const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>([]);
   const [scopeText, setScopeText] = useState("");
   const [controlDomains, setControlDomains] = useState<ControlDomain[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<string>(() => 
+    'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9)
+  );
+  const [lastAiResponse, setLastAiResponse] = useState<string>("");
   const { toast } = useToast();
 
   // Get unique categories from policy templates
@@ -89,6 +89,64 @@ export const AuditScopeUpload = () => {
     );
     const result = await response.json();
     return result.text;
+  };
+
+  const saveSessionToStorage = (sessionData: AuditScopeSession) => {
+    try {
+      const saved = localStorage.getItem(AUDIT_SESSIONS_STORAGE_KEY);
+      const sessions = saved ? JSON.parse(saved) : [];
+      
+      const existingIndex = sessions.findIndex((s: AuditScopeSession) => s.id === sessionData.id);
+      if (existingIndex >= 0) {
+        sessions[existingIndex] = sessionData;
+      } else {
+        sessions.push(sessionData);
+      }
+      
+      localStorage.setItem(AUDIT_SESSIONS_STORAGE_KEY, JSON.stringify(sessions));
+    } catch (error) {
+      console.error('Error saving session:', error);
+    }
+  };
+
+  const handleSaveCurrentSession = (sessionName: string) => {
+    const sessionData: AuditScopeSession = {
+      id: currentSessionId,
+      name: sessionName,
+      createdAt: new Date(),
+      lastUpdated: new Date(),
+      auditType,
+      customAuditName: auditType === "custom" ? customAuditName : undefined,
+      selectedFrameworks,
+      scopeText,
+      controlDomains,
+      aiResponse: lastAiResponse
+    };
+    
+    saveSessionToStorage(sessionData);
+  };
+
+  const handleLoadSession = (sessionData: AuditScopeSession) => {
+    setCurrentSessionId(sessionData.id);
+    setAuditType(sessionData.auditType);
+    setCustomAuditName(sessionData.customAuditName || "");
+    setSelectedFrameworks(sessionData.selectedFrameworks);
+    setScopeText(sessionData.scopeText);
+    setControlDomains(sessionData.controlDomains);
+    setLastAiResponse(sessionData.aiResponse || "");
+  };
+
+  const handleDeleteSession = (sessionId: string) => {
+    if (sessionId === currentSessionId) {
+      // Reset current session if deleted
+      setCurrentSessionId('session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9));
+      setAuditType("");
+      setCustomAuditName("");
+      setSelectedFrameworks([]);
+      setScopeText("");
+      setControlDomains([]);
+      setLastAiResponse("");
+    }
   };
 
   const handleScopeProcessing = async () => {
@@ -142,6 +200,8 @@ Please identify and return specific control domains with their descriptions and 
         }
       });
 
+      setLastAiResponse(aiResponse);
+
       // Continue with progress
       for (let i = 2; i < steps.length; i++) {
         await new Promise(resolve => setTimeout(resolve, 800));
@@ -191,6 +251,22 @@ Please identify and return specific control domains with their descriptions and 
         scope: scopeText
       });
 
+      // Auto-save the current session with analysis results
+      const autoSaveSessionData: AuditScopeSession = {
+        id: currentSessionId,
+        name: `Auto-saved: ${auditName} - ${new Date().toLocaleString()}`,
+        createdAt: new Date(),
+        lastUpdated: new Date(),
+        auditType,
+        customAuditName: auditType === "custom" ? customAuditName : undefined,
+        selectedFrameworks,
+        scopeText,
+        controlDomains: mockDomains,
+        aiResponse
+      };
+      
+      saveSessionToStorage(autoSaveSessionData);
+
     } catch (error) {
       console.error("Error calling AI agent:", error);
       toast({
@@ -232,10 +308,19 @@ Please identify and return specific control domains with their descriptions and 
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-primary-900 mb-4 flex items-center gap-2">
-          <Brain className="h-5 w-5" />
-          AI Scope Analysis
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-primary-900 flex items-center gap-2">
+            <Brain className="h-5 w-5" />
+            AI Scope Analysis
+          </h2>
+          
+          <AuditScopeSessionHistory
+            currentSessionId={currentSessionId}
+            onLoadSession={handleLoadSession}
+            onDeleteSession={handleDeleteSession}
+            onSaveCurrentSession={handleSaveCurrentSession}
+          />
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div className="space-y-4">
