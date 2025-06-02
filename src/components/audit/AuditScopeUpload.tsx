@@ -24,6 +24,13 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { policyTemplates } from "@/data/policyTemplates";
 
 interface ControlDomain {
@@ -34,10 +41,19 @@ interface ControlDomain {
   status: "identified" | "processing" | "ready";
 }
 
+const auditTypeOptions = [
+  { value: "annually", label: "Annually" },
+  { value: "quarterly", label: "Quarterly" },
+  { value: "monthly", label: "Monthly" },
+  { value: "ad-hoc", label: "Ad-hoc" },
+  { value: "custom", label: "Custom" }
+];
+
 export const AuditScopeUpload = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [auditName, setAuditName] = useState("");
+  const [auditType, setAuditType] = useState("");
+  const [customAuditName, setCustomAuditName] = useState("");
   const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>([]);
   const [scopeText, setScopeText] = useState("");
   const [controlDomains, setControlDomains] = useState<ControlDomain[]>([]);
@@ -54,11 +70,20 @@ export const AuditScopeUpload = () => {
     );
   };
 
+  const getAuditName = () => {
+    if (auditType === "custom") {
+      return customAuditName;
+    }
+    return auditTypeOptions.find(option => option.value === auditType)?.label || "";
+  };
+
   const handleScopeProcessing = async () => {
-    if (!auditName || selectedFrameworks.length === 0 || !scopeText) {
+    const auditName = getAuditName();
+    
+    if (!auditType || (auditType === "custom" && !customAuditName) || selectedFrameworks.length === 0 || !scopeText) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required fields including at least one compliance framework",
+        description: "Please fill in all required fields including audit type and at least one compliance framework",
         variant: "destructive",
       });
       return;
@@ -152,14 +177,32 @@ export const AuditScopeUpload = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div className="space-y-4">
             <div>
-              <Label htmlFor="auditName">Audit Name *</Label>
-              <Input 
-                id="auditName"
-                value={auditName}
-                onChange={(e) => setAuditName(e.target.value)}
-                placeholder="e.g., Q4 SOC 2 Type II Audit"
-              />
+              <Label htmlFor="auditType">Audit Type *</Label>
+              <Select value={auditType} onValueChange={setAuditType}>
+                <SelectTrigger id="auditType">
+                  <SelectValue placeholder="Select audit type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {auditTypeOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+
+            {auditType === "custom" && (
+              <div>
+                <Label htmlFor="customAuditName">Custom Audit Name *</Label>
+                <Input 
+                  id="customAuditName"
+                  value={customAuditName}
+                  onChange={(e) => setCustomAuditName(e.target.value)}
+                  placeholder="Enter custom audit name"
+                />
+              </div>
+            )}
             
             <div>
               <Label htmlFor="framework">Compliance Framework *</Label>
