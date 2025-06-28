@@ -10,8 +10,8 @@ interface RoleContextType {
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
-  // Initialize with viewer role as it has basic access
-  const [role, setRole] = useState<Role>("viewer");
+  // Initialize with external-auditor role to showcase the new dashboard
+  const [role, setRole] = useState<Role>("external-auditor");
 
   return (
     <RoleContext.Provider value={{ role, setRole }}>

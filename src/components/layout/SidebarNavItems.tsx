@@ -68,7 +68,20 @@ export const SidebarNavItems = ({
 
   return (
     <>
-      {hasAccess("dashboard") && (
+      {/* External Auditor Dashboard - Only for external auditors */}
+      {role === "external-auditor" && (
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            isActive={location.pathname === "/external-auditor"}
+            onClick={() => navigate("/external-auditor")}
+          >
+            <Search className="h-4 w-4" />
+            {!isCollapsed && <span>Audit Dashboard</span>}
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      )}
+
+      {hasAccess("dashboard") && role !== "external-auditor" && (
         <SidebarMenuItem>
           <SidebarMenuButton
             isActive={location.pathname === "/dashboard"}
