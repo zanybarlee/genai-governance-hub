@@ -47,7 +47,7 @@ export const SidebarNavItems = ({
       {role === "external-auditor" && <SidebarMenuItem>
           <SidebarMenuButton isActive={location.pathname === "/external-auditor"} onClick={() => navigate("/external-auditor")}>
             <Search className="h-4 w-4" />
-            {!isCollapsed && <span>External Audit</span>}
+            {!isCollapsed && <span>External Auditor</span>}
           </SidebarMenuButton>
         </SidebarMenuItem>}
 
