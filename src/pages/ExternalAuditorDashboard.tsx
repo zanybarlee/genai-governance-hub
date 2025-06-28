@@ -1,4 +1,3 @@
-
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
@@ -15,7 +14,6 @@ import { EvidenceCollection } from "@/components/external-auditor/EvidenceCollec
 import { GapDetection } from "@/components/external-auditor/GapDetection";
 import { ExecutiveReportGenerator } from "@/components/external-auditor/ExecutiveReportGenerator";
 import { useState } from "react";
-
 export interface Engagement {
   id: string;
   name: string;
@@ -32,7 +30,6 @@ export interface Engagement {
   gapControls: number;
   partialControls: number;
 }
-
 const ExternalAuditorDashboard = () => {
   const [selectedEngagement, setSelectedEngagement] = useState<Engagement>({
     id: "1",
@@ -50,9 +47,7 @@ const ExternalAuditorDashboard = () => {
     gapControls: 12,
     partialControls: 19
   });
-
-  return (
-    <SidebarProvider>
+  return <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
         <AppSidebar />
         <div className="flex-1">
@@ -63,17 +58,12 @@ const ExternalAuditorDashboard = () => {
               <div className="mb-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h1 className="text-2xl font-bold text-gray-900">
-                      KPMG External Audit Dashboard
-                    </h1>
+                    <h1 className="text-2xl font-bold text-gray-900">External Audit Dashboard</h1>
                     <p className="text-gray-600 text-sm">
                       {selectedEngagement.client} • {selectedEngagement.framework} • 2025 Annual Audit
                     </p>
                   </div>
-                  <EngagementSelector 
-                    selectedEngagement={selectedEngagement}
-                    onEngagementChange={setSelectedEngagement}
-                  />
+                  <EngagementSelector selectedEngagement={selectedEngagement} onEngagementChange={setSelectedEngagement} />
                 </div>
               </div>
 
@@ -124,18 +114,13 @@ const ExternalAuditorDashboard = () => {
 
                 {/* Reporting Tab */}
                 <TabsContent value="reporting" className="space-y-6">
-                  <ExecutiveReportGenerator 
-                    engagementId={selectedEngagement.id} 
-                    clientName={selectedEngagement.client}
-                  />
+                  <ExecutiveReportGenerator engagementId={selectedEngagement.id} clientName={selectedEngagement.client} />
                 </TabsContent>
               </Tabs>
             </div>
           </main>
         </div>
       </div>
-    </SidebarProvider>
-  );
+    </SidebarProvider>;
 };
-
 export default ExternalAuditorDashboard;
