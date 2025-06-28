@@ -1,6 +1,8 @@
+
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EngagementOverview } from "@/components/external-auditor/EngagementOverview";
 import { ComplianceCoverageWheel } from "@/components/external-auditor/ComplianceCoverageWheel";
 import { ArtifactTracker } from "@/components/external-auditor/ArtifactTracker";
@@ -57,7 +59,7 @@ const ExternalAuditorDashboard = () => {
           <Header />
           <main className="p-4">
             <div className="mx-auto max-w-7xl">
-              {/* Simplified Header */}
+              {/* Header */}
               <div className="mb-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -75,41 +77,59 @@ const ExternalAuditorDashboard = () => {
                 </div>
               </div>
 
-              {/* Streamlined Grid Layout */}
-              <div className="space-y-6">
-                {/* Top Row - Overview */}
+              {/* Engagement Overview - Always Visible */}
+              <div className="mb-6">
                 <EngagementOverview engagement={selectedEngagement} />
-                
-                {/* AI-Powered Components Row */}
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                  <ScopingAssistant engagementId={selectedEngagement.id} />
-                  <AssetMapping engagementId={selectedEngagement.id} />
-                </div>
-
-                {/* Evidence and Gap Analysis Row */}
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                  <EvidenceCollection engagementId={selectedEngagement.id} />
-                  <GapDetection engagementId={selectedEngagement.id} />
-                </div>
-
-                {/* Executive Reporting */}
-                <ExecutiveReportGenerator 
-                  engagementId={selectedEngagement.id} 
-                  clientName={selectedEngagement.client}
-                />
-
-                {/* Original Components Row */}
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                  <ComplianceCoverageWheel engagement={selectedEngagement} />
-                  <AuditInsightsWidget engagementId={selectedEngagement.id} />
-                </div>
-
-                {/* Bottom Row */}
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                  <ArtifactTracker engagementId={selectedEngagement.id} />
-                  <RemediationDashboard engagementId={selectedEngagement.id} />
-                </div>
               </div>
+
+              {/* Tab Navigation */}
+              <Tabs defaultValue="planning" className="space-y-6">
+                <TabsList className="grid w-full grid-cols-5">
+                  <TabsTrigger value="planning">Planning & Scoping</TabsTrigger>
+                  <TabsTrigger value="evidence">Evidence Collection</TabsTrigger>
+                  <TabsTrigger value="analysis">Analysis & Insights</TabsTrigger>
+                  <TabsTrigger value="remediation">Remediation</TabsTrigger>
+                  <TabsTrigger value="reporting">Reporting</TabsTrigger>
+                </TabsList>
+
+                {/* Planning & Scoping Tab */}
+                <TabsContent value="planning" className="space-y-6">
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <ScopingAssistant engagementId={selectedEngagement.id} />
+                    <AssetMapping engagementId={selectedEngagement.id} />
+                  </div>
+                  <ComplianceCoverageWheel engagement={selectedEngagement} />
+                </TabsContent>
+
+                {/* Evidence Collection Tab */}
+                <TabsContent value="evidence" className="space-y-6">
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <EvidenceCollection engagementId={selectedEngagement.id} />
+                    <ArtifactTracker engagementId={selectedEngagement.id} />
+                  </div>
+                </TabsContent>
+
+                {/* Analysis & Insights Tab */}
+                <TabsContent value="analysis" className="space-y-6">
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <GapDetection engagementId={selectedEngagement.id} />
+                    <AuditInsightsWidget engagementId={selectedEngagement.id} />
+                  </div>
+                </TabsContent>
+
+                {/* Remediation Tab */}
+                <TabsContent value="remediation" className="space-y-6">
+                  <RemediationDashboard engagementId={selectedEngagement.id} />
+                </TabsContent>
+
+                {/* Reporting Tab */}
+                <TabsContent value="reporting" className="space-y-6">
+                  <ExecutiveReportGenerator 
+                    engagementId={selectedEngagement.id} 
+                    clientName={selectedEngagement.client}
+                  />
+                </TabsContent>
+              </Tabs>
             </div>
           </main>
         </div>
