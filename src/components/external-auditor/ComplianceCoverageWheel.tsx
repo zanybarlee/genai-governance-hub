@@ -75,13 +75,6 @@ export const ComplianceCoverageWheel = ({ engagement }: ComplianceCoverageWheelP
     }
   };
 
-  const getProgressColor = (coverage: number) => {
-    if (coverage >= 85) return "bg-green-500";
-    if (coverage >= 70) return "bg-blue-500";
-    if (coverage >= 50) return "bg-yellow-500";
-    return "bg-red-500";
-  };
-
   return (
     <Card className="border-indigo-200">
       <CardHeader>
@@ -123,7 +116,7 @@ export const ComplianceCoverageWheel = ({ engagement }: ComplianceCoverageWheelP
               <div className="flex items-center gap-2">
                 <Progress 
                   value={category.coverage} 
-                  className={`flex-1 h-2 ${getProgressColor(category.coverage)}`}
+                  className="flex-1 h-2"
                 />
                 <span className="text-xs text-gray-500 min-w-[60px]">{category.controls}</span>
               </div>
