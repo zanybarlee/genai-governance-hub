@@ -7,6 +7,11 @@ import { ArtifactTracker } from "@/components/external-auditor/ArtifactTracker";
 import { RemediationDashboard } from "@/components/external-auditor/RemediationDashboard";
 import { AuditInsightsWidget } from "@/components/external-auditor/AuditInsightsWidget";
 import { EngagementSelector } from "@/components/external-auditor/EngagementSelector";
+import { ScopingAssistant } from "@/components/external-auditor/ScopingAssistant";
+import { AssetMapping } from "@/components/external-auditor/AssetMapping";
+import { EvidenceCollection } from "@/components/external-auditor/EvidenceCollection";
+import { GapDetection } from "@/components/external-auditor/GapDetection";
+import { ExecutiveReportGenerator } from "@/components/external-auditor/ExecutiveReportGenerator";
 import { useState } from "react";
 
 export interface Engagement {
@@ -57,10 +62,10 @@ const ExternalAuditorDashboard = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <h1 className="text-2xl font-bold text-gray-900">
-                      External Audit Dashboard
+                      KPMG External Audit Dashboard
                     </h1>
                     <p className="text-gray-600 text-sm">
-                      {selectedEngagement.client} • {selectedEngagement.framework}
+                      {selectedEngagement.client} • {selectedEngagement.framework} • 2025 Annual Audit
                     </p>
                   </div>
                   <EngagementSelector 
@@ -75,13 +80,31 @@ const ExternalAuditorDashboard = () => {
                 {/* Top Row - Overview */}
                 <EngagementOverview engagement={selectedEngagement} />
                 
-                {/* Middle Row - Side by Side */}
+                {/* AI-Powered Components Row */}
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                  <ScopingAssistant engagementId={selectedEngagement.id} />
+                  <AssetMapping engagementId={selectedEngagement.id} />
+                </div>
+
+                {/* Evidence and Gap Analysis Row */}
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                  <EvidenceCollection engagementId={selectedEngagement.id} />
+                  <GapDetection engagementId={selectedEngagement.id} />
+                </div>
+
+                {/* Executive Reporting */}
+                <ExecutiveReportGenerator 
+                  engagementId={selectedEngagement.id} 
+                  clientName={selectedEngagement.client}
+                />
+
+                {/* Original Components Row */}
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                   <ComplianceCoverageWheel engagement={selectedEngagement} />
                   <AuditInsightsWidget engagementId={selectedEngagement.id} />
                 </div>
 
-                {/* Bottom Row - Full Width */}
+                {/* Bottom Row */}
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                   <ArtifactTracker engagementId={selectedEngagement.id} />
                   <RemediationDashboard engagementId={selectedEngagement.id} />
