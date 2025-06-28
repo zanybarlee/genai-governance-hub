@@ -1,4 +1,3 @@
-
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
@@ -47,46 +46,45 @@ const ExternalAuditorDashboard = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="min-h-screen flex w-full bg-gray-50">
         <AppSidebar />
         <div className="flex-1">
           <Header />
-          <main className="p-6">
-            <div className="mx-auto max-w-screen-2xl">
-              <div className="mb-8">
+          <main className="p-4">
+            <div className="mx-auto max-w-7xl">
+              {/* Simplified Header */}
+              <div className="mb-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h1 className="text-3xl font-bold text-indigo-900 animate-fade-in">
-                      KPMG External Audit Dashboard
+                    <h1 className="text-2xl font-bold text-gray-900">
+                      External Audit Dashboard
                     </h1>
-                    <p className="text-gray-600 mt-2 animate-fade-in delay-100">
-                      AI-powered IT audit management and compliance tracking
+                    <p className="text-gray-600 text-sm">
+                      {selectedEngagement.client} • {selectedEngagement.framework}
                     </p>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
-                      <p className="text-sm text-gray-500">Current Engagement</p>
-                      <EngagementSelector 
-                        selectedEngagement={selectedEngagement}
-                        onEngagementChange={setSelectedEngagement}
-                      />
-                    </div>
-                  </div>
+                  <EngagementSelector 
+                    selectedEngagement={selectedEngagement}
+                    onEngagementChange={setSelectedEngagement}
+                  />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Column - Main Panels */}
-                <div className="lg:col-span-2 space-y-6">
-                  <EngagementOverview engagement={selectedEngagement} />
-                  <ArtifactTracker engagementId={selectedEngagement.id} />
-                  <RemediationDashboard engagementId={selectedEngagement.id} />
-                </div>
-
-                {/* Right Column - Insights & Coverage */}
-                <div className="space-y-6">
+              {/* Streamlined Grid Layout */}
+              <div className="space-y-6">
+                {/* Top Row - Overview */}
+                <EngagementOverview engagement={selectedEngagement} />
+                
+                {/* Middle Row - Side by Side */}
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                   <ComplianceCoverageWheel engagement={selectedEngagement} />
                   <AuditInsightsWidget engagementId={selectedEngagement.id} />
+                </div>
+
+                {/* Bottom Row - Full Width */}
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                  <ArtifactTracker engagementId={selectedEngagement.id} />
+                  <RemediationDashboard engagementId={selectedEngagement.id} />
                 </div>
               </div>
             </div>
