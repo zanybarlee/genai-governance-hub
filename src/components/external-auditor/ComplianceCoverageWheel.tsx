@@ -140,7 +140,7 @@ export const ComplianceCoverageWheel = ({ engagement }: ComplianceCoverageWheelP
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              <span>Critical (<50%)</span>
+              <span>Critical (&lt;50%)</span>
             </div>
           </div>
         </div>
