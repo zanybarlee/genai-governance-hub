@@ -1,4 +1,3 @@
-
 import React from "react";
 import { UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,6 +30,7 @@ export const RoleSwitcher = () => {
     { id: "audit-manager", name: "Audit Manager", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=AuditMgr" },
     { id: "it-manager", name: "IT Manager / CIO", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=ITMgr" },
     { id: "senior-management", name: "Senior Management", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=SeniorMgmt" },
+    { id: "external-auditor", name: "External Auditor", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=ExtAudit" },
     { id: "viewer", name: "Viewer", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Viewer" },
   ];
 

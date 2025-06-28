@@ -48,6 +48,7 @@ export function RoleManagement() {
               <SelectItem value="audit-manager">Audit Manager</SelectItem>
               <SelectItem value="it-manager">IT Manager / CIO</SelectItem>
               <SelectItem value="senior-management">Senior Management</SelectItem>
+              <SelectItem value="external-auditor">External Auditor</SelectItem>
               <SelectItem value="viewer">Viewer</SelectItem>
             </SelectContent>
           </Select>

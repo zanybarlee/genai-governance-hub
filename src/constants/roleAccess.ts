@@ -1,5 +1,5 @@
 
-export type Role = "superuser" | "admin" | "developer" | "auditor" | "manager" | "viewer" | "system-engineer" | "audit-manager" | "it-manager" | "senior-management";
+export type Role = "superuser" | "admin" | "developer" | "auditor" | "manager" | "viewer" | "system-engineer" | "audit-manager" | "it-manager" | "senior-management" | "external-auditor";
 
 export type AccessibleModule = 
   | "dashboard" 
@@ -22,4 +22,5 @@ export const roleAccess: Record<Role, AccessibleModule[]> = {
   "audit-manager": ["dashboard", "policies", "compliance", "audit", "system-audit", "settings"], // Manages audit processes and teams
   "it-manager": ["dashboard", "policies", "compliance", "cicd", "system-audit", "settings"], // IT leadership with broad access except direct auditing
   "senior-management": ["dashboard", "compliance"], // Executive view focused on compliance and high-level dashboards
+  "external-auditor": ["dashboard", "compliance", "audit", "system-audit"], // External auditor with read-only access to audit and compliance data
 };
