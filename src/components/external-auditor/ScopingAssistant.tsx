@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Upload, Bot, FileText, CheckCircle, Clock, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { ScopingChat } from "./ScopingChat";
+import { AssetMapping } from "./AssetMapping";
 
 interface ScopingAssistantProps {
   engagementId: string;
@@ -113,6 +114,11 @@ export const ScopingAssistant = ({ engagementId }: ScopingAssistantProps) => {
       {/* Chat Interface - Full Width */}
       <div className="w-full">
         <ScopingChat engagementId={engagementId} />
+      </div>
+
+      {/* Asset Mapping Section - Full Width */}
+      <div className="w-full">
+        <AssetMapping engagementId={engagementId} />
       </div>
 
       {/* Document Analysis Section - Full Width */}

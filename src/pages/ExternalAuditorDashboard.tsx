@@ -9,7 +9,6 @@ import { RemediationDashboard } from "@/components/external-auditor/RemediationD
 import { AuditInsightsWidget } from "@/components/external-auditor/AuditInsightsWidget";
 import { EngagementSelector } from "@/components/external-auditor/EngagementSelector";
 import { ScopingAssistant } from "@/components/external-auditor/ScopingAssistant";
-import { AssetMapping } from "@/components/external-auditor/AssetMapping";
 import { EvidenceCollection } from "@/components/external-auditor/EvidenceCollection";
 import { GapDetection } from "@/components/external-auditor/GapDetection";
 import { ExecutiveReportGenerator } from "@/components/external-auditor/ExecutiveReportGenerator";
@@ -84,10 +83,7 @@ const ExternalAuditorDashboard = () => {
 
                 {/* Planning & Scoping Tab */}
                 <TabsContent value="planning" className="space-y-6">
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                    <ScopingAssistant engagementId={selectedEngagement.id} />
-                    <AssetMapping engagementId={selectedEngagement.id} />
-                  </div>
+                  <ScopingAssistant engagementId={selectedEngagement.id} />
                   <ComplianceCoverageWheel engagement={selectedEngagement} />
                 </TabsContent>
 
