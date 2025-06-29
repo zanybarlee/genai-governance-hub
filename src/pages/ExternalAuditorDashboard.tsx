@@ -13,6 +13,7 @@ import { EvidenceCollection } from "@/components/external-auditor/EvidenceCollec
 import { GapDetection } from "@/components/external-auditor/GapDetection";
 import { ExecutiveReportGenerator } from "@/components/external-auditor/ExecutiveReportGenerator";
 import { useState } from "react";
+
 export interface Engagement {
   id: string;
   name: string;
@@ -29,6 +30,7 @@ export interface Engagement {
   gapControls: number;
   partialControls: number;
 }
+
 const ExternalAuditorDashboard = () => {
   const [selectedEngagement, setSelectedEngagement] = useState<Engagement>({
     id: "1",
@@ -46,13 +48,14 @@ const ExternalAuditorDashboard = () => {
     gapControls: 12,
     partialControls: 19
   });
-  return <SidebarProvider>
+  return (
+    <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
         <AppSidebar />
-        <div className="flex-1">
+        <div className="flex-1 flex flex-col min-w-0">
           <Header />
-          <main className="p-4">
-            <div className="mx-auto max-w-7xl">
+          <main className="flex-1 p-4">
+            <div className="mx-auto max-w-7xl w-full">
               {/* Header */}
               <div className="mb-6">
                 <div className="flex items-center justify-between">
@@ -117,6 +120,8 @@ const ExternalAuditorDashboard = () => {
           </main>
         </div>
       </div>
-    </SidebarProvider>;
+    </SidebarProvider>
+  );
 };
+
 export default ExternalAuditorDashboard;
