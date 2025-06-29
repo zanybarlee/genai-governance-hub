@@ -18,27 +18,7 @@ interface ChatMessage {
 }
 
 export const ScopingChat = ({ engagementId }: ScopingChatProps) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content: "Hi there! How can I help?",
-      timestamp: new Date()
-    },
-    {
-      id: "2",
-      role: "user", 
-      content: "We're preparing for an IT audit for a regional bank client. They've uploaded their IT Policy Manual, Access Control Policy, and Backup Policy. Can you help me review and scope this audit based on those documents?",
-      timestamp: new Date()
-    },
-    {
-      id: "3",
-      role: "assistant",
-      content: "I'll help you scope the IT audit for your regional bank client. Based on the uploaded documents (IT Policy Manual, Access Control Policy, and Backup Policy), I'll:\n\n1. Extract and map key controls to ISO 27001 domains\n2. Identify any gaps or missing controls\n3. Prepare a structured summary of identified controls\n4. Draft an initial audit proposal with role-based consulting rates and estimated mandays\n\nLet me analyze the documents and provide you with a comprehensive scoping assessment.",
-      timestamp: new Date()
-    }
-  ]);
-  
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -90,7 +70,7 @@ export const ScopingChat = ({ engagementId }: ScopingChatProps) => {
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: response.text || "I'm processing your request. Please provide more details about the audit scope.",
+        content: response.text || "I'm here to help you with audit scoping. Please provide more details about your audit requirements.",
         timestamp: new Date()
       };
 
@@ -141,6 +121,15 @@ export const ScopingChat = ({ engagementId }: ScopingChatProps) => {
         {/* Messages Area */}
         <ScrollArea className="flex-1 pr-4 mb-4" ref={scrollAreaRef}>
           <div className="space-y-4">
+            {messages.length === 0 && (
+              <div className="flex items-center justify-center h-32 text-gray-500">
+                <div className="text-center">
+                  <MessageCircle className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                  <p className="text-sm">Start a conversation about audit scoping</p>
+                </div>
+              </div>
+            )}
+            
             {messages.map((message) => (
               <div
                 key={message.id}
