@@ -110,6 +110,9 @@ export const ScopingAssistant = ({ engagementId }: ScopingAssistantProps) => {
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      {/* Chat Interface */}
+      <ScopingChat engagementId={engagementId} />
+
       {/* Document Upload Section */}
       <Card className="border-blue-200">
         <CardHeader>
@@ -201,9 +204,6 @@ export const ScopingAssistant = ({ engagementId }: ScopingAssistantProps) => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Chat Interface */}
-      <ScopingChat engagementId={engagementId} />
     </div>
   );
 };
