@@ -109,99 +109,119 @@ export const ScopingAssistant = ({ engagementId }: ScopingAssistantProps) => {
   };
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-      {/* Chat Interface */}
-      <ScopingChat engagementId={engagementId} />
+    <div className="space-y-8">
+      {/* Chat Interface - Full Width */}
+      <div className="w-full">
+        <ScopingChat engagementId={engagementId} />
+      </div>
 
-      {/* Document Upload Section */}
+      {/* Document Analysis Section - Full Width */}
       <Card className="border-blue-200">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-blue-900">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-blue-900 text-lg">
             <Bot className="h-5 w-5" />
             AI Document Analysis
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Upload client documents for automated control identification and mapping
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {/* Upload Section */}
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-sm text-gray-600 mb-4">
-                Upload IT Policy manual, procedures, or configuration documents
-              </p>
-              <Button 
-                onClick={handleFileUpload}
-                disabled={isProcessing}
-                className="gap-2"
-              >
-                {isProcessing ? <Clock className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                {isProcessing ? "Processing..." : "Upload Documents"}
-              </Button>
-            </div>
+        <CardContent className="space-y-6">
+          {/* Upload Section */}
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50/50">
+            <Upload className="h-10 w-10 text-gray-400 mx-auto mb-3" />
+            <p className="text-sm text-gray-600 mb-4 font-medium">
+              Upload IT Policy manual, procedures, or configuration documents
+            </p>
+            <Button 
+              onClick={handleFileUpload}
+              disabled={isProcessing}
+              className="gap-2"
+              size="lg"
+            >
+              {isProcessing ? <Clock className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+              {isProcessing ? "Processing..." : "Upload Documents"}
+            </Button>
+          </div>
 
-            {/* AI Processing Status */}
-            {isProcessing && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-center gap-3">
-                  <Clock className="h-5 w-5 text-blue-600 animate-spin" />
-                  <div>
-                    <p className="font-medium text-blue-900">AI Analysis in Progress</p>
-                    <p className="text-sm text-blue-700">
-                      Analyzing document for control identification and compliance mapping...
-                    </p>
-                  </div>
+          {/* AI Processing Status */}
+          {isProcessing && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center gap-3">
+                <Clock className="h-5 w-5 text-blue-600 animate-spin" />
+                <div>
+                  <p className="font-medium text-blue-900">AI Analysis in Progress</p>
+                  <p className="text-sm text-blue-700 mt-1">
+                    Analyzing document for control identification and compliance mapping...
+                  </p>
                 </div>
               </div>
-            )}
-
-            {/* Documents List */}
-            <div className="space-y-3">
-              <h4 className="font-medium text-gray-900">Uploaded Documents</h4>
-              {documents.map((doc) => (
-                <div key={doc.id} className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-3">
-                      {getStatusIcon(doc.status)}
-                      <span className="font-medium">{doc.name}</span>
-                      <Badge variant="outline">{doc.size}</Badge>
-                    </div>
-                    <Badge 
-                      className={
-                        doc.status === "analyzed" ? "bg-green-100 text-green-800" : 
-                        doc.status === "failed" ? "bg-red-100 text-red-800" :
-                        "bg-yellow-100 text-yellow-800"
-                      }
-                      variant="secondary"
-                    >
-                      {doc.status}
-                    </Badge>
-                  </div>
-                  {doc.status === "analyzed" && (
-                    <div className="mt-3">
-                      <p className="text-sm text-gray-600 mb-2">Identified Controls:</p>
-                      <div className="flex flex-wrap gap-1">
-                        {doc.controls.map((control, idx) => (
-                          <Badge key={idx} variant="outline" className="text-xs">
-                            {control}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {doc.status === "failed" && (
-                    <div className="mt-3">
-                      <p className="text-sm text-red-600">
-                        Failed to analyze document. Please try uploading again.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ))}
             </div>
-          </div>
+          )}
+
+          {/* Documents List */}
+          {documents.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="font-semibold text-gray-900">Uploaded Documents</h4>
+                <Badge variant="outline" className="text-xs">
+                  {documents.length} document{documents.length !== 1 ? 's' : ''}
+                </Badge>
+              </div>
+              
+              <div className="grid gap-4">
+                {documents.map((doc) => (
+                  <div key={doc.id} className="border rounded-lg p-4 bg-white shadow-sm">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        {getStatusIcon(doc.status)}
+                        <div>
+                          <span className="font-medium text-sm">{doc.name}</span>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge variant="outline" className="text-xs">{doc.size}</Badge>
+                            <span className="text-xs text-gray-500">
+                              {doc.uploadedAt.toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <Badge 
+                        className={
+                          doc.status === "analyzed" ? "bg-green-100 text-green-800 border-green-200" : 
+                          doc.status === "failed" ? "bg-red-100 text-red-800 border-red-200" :
+                          "bg-yellow-100 text-yellow-800 border-yellow-200"
+                        }
+                        variant="secondary"
+                      >
+                        {doc.status}
+                      </Badge>
+                    </div>
+                    
+                    {doc.status === "analyzed" && doc.controls.length > 0 && (
+                      <div className="pt-3 border-t border-gray-100">
+                        <p className="text-sm text-gray-600 mb-2 font-medium">Identified Controls:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {doc.controls.map((control, idx) => (
+                            <Badge key={idx} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                              {control}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {doc.status === "failed" && (
+                      <div className="pt-3 border-t border-red-100">
+                        <p className="text-sm text-red-600">
+                          Failed to analyze document. Please try uploading again.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
