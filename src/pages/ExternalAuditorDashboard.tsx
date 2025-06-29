@@ -12,6 +12,7 @@ import { ScopingAssistant } from "@/components/external-auditor/ScopingAssistant
 import { EvidenceCollection } from "@/components/external-auditor/EvidenceCollection";
 import { GapDetection } from "@/components/external-auditor/GapDetection";
 import { ExecutiveReportGenerator } from "@/components/external-auditor/ExecutiveReportGenerator";
+import { RiskHeatmap } from "@/components/external-auditor/RiskHeatmap";
 import { useState } from "react";
 
 export interface Engagement {
@@ -112,7 +113,10 @@ const ExternalAuditorDashboard = () => {
 
               {/* Reporting Tab */}
               <TabsContent value="reporting" className="space-y-6">
-                <ExecutiveReportGenerator engagementId={selectedEngagement.id} clientName={selectedEngagement.client} />
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                  <ExecutiveReportGenerator engagementId={selectedEngagement.id} clientName={selectedEngagement.client} />
+                  <RiskHeatmap engagementId={selectedEngagement.id} clientName={selectedEngagement.client} />
+                </div>
               </TabsContent>
             </Tabs>
           </div>
