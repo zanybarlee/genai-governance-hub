@@ -1,9 +1,11 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Bot, User, Send, MessageCircle } from "lucide-react";
+import { Bot, User, Send, MessageCircle, Save, RefreshCcw } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
 
 interface ScopingChatProps {
   engagementId: string;
@@ -16,12 +18,44 @@ interface ChatMessage {
   timestamp: Date;
 }
 
+const STORAGE_KEY = 'scoping-chat-messages';
+const SESSION_KEY = 'scoping-chat-session-id';
+
 export const ScopingChat = ({ engagementId }: ScopingChatProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string>(() => 
+    localStorage.getItem(`${SESSION_KEY}-${engagementId}`) || `session-${Date.now()}`
+  );
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+
+  // Load messages from localStorage on component mount
+  useEffect(() => {
+    const savedMessages = localStorage.getItem(`${STORAGE_KEY}-${engagementId}`);
+    if (savedMessages) {
+      try {
+        const parsed = JSON.parse(savedMessages);
+        const messagesWithDates = parsed.map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp)
+        }));
+        setMessages(messagesWithDates);
+      } catch (error) {
+        console.error('Error loading messages from localStorage:', error);
+      }
+    }
+  }, [engagementId]);
+
+  // Save messages to localStorage whenever messages change
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem(`${STORAGE_KEY}-${engagementId}`, JSON.stringify(messages));
+      localStorage.setItem(`${SESSION_KEY}-${engagementId}`, sessionId);
+    }
+  }, [messages, engagementId, sessionId]);
 
   const query = async (data: { question: string; overrideConfig?: any }) => {
     const response = await fetch(
@@ -58,7 +92,7 @@ export const ScopingChat = ({ engagementId }: ScopingChatProps) => {
       const response = await query({
         question: inputMessage,
         overrideConfig: {
-          sessionId: `scoping-chat-${engagementId}`,
+          sessionId: sessionId,
           startInputType: "audit_scoping",
           formTitle: "IT Audit Scoping Chat",
           formDescription: "Interactive audit scoping conversation",
@@ -99,6 +133,45 @@ export const ScopingChat = ({ engagementId }: ScopingChatProps) => {
     }
   };
 
+  const handleSaveSession = () => {
+    if (messages.length === 0) {
+      toast({
+        title: "No messages to save",
+        description: "Start a conversation first to save the session.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Force save to localStorage
+    localStorage.setItem(`${STORAGE_KEY}-${engagementId}`, JSON.stringify(messages));
+    localStorage.setItem(`${SESSION_KEY}-${engagementId}`, sessionId);
+    
+    toast({
+      title: "Session saved",
+      description: `Chat session with ${messages.length} messages has been saved.`,
+    });
+  };
+
+  const handleReloadSession = () => {
+    // Clear current session
+    setMessages([]);
+    setInputMessage("");
+    
+    // Generate new session ID
+    const newSessionId = `session-${Date.now()}`;
+    setSessionId(newSessionId);
+    
+    // Clear localStorage
+    localStorage.removeItem(`${STORAGE_KEY}-${engagementId}`);
+    localStorage.removeItem(`${SESSION_KEY}-${engagementId}`);
+    
+    toast({
+      title: "Session cleared",
+      description: "Started a new chat session.",
+    });
+  };
+
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -107,10 +180,32 @@ export const ScopingChat = ({ engagementId }: ScopingChatProps) => {
   return (
     <Card className="border-green-200 h-[600px] flex flex-col">
       <CardHeader className="pb-3 flex-shrink-0">
-        <CardTitle className="flex items-center gap-2 text-green-900">
-          <MessageCircle className="h-5 w-5" />
-          AI Scoping Assistant
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5 text-green-900" />
+            <CardTitle className="text-green-900">AI Scoping Assistant</CardTitle>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={handleSaveSession}
+              size="sm"
+              variant="outline"
+              className="gap-2"
+            >
+              <Save className="h-4 w-4" />
+              Save
+            </Button>
+            <Button
+              onClick={handleReloadSession}
+              size="sm"
+              variant="outline"
+              className="gap-2"
+            >
+              <RefreshCcw className="h-4 w-4" />
+              Clear
+            </Button>
+          </div>
+        </div>
         <CardDescription>
           Interactive conversation for audit planning and scoping guidance
         </CardDescription>
