@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Bot, User, Send, MessageCircle } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -22,6 +22,7 @@ export const ScopingChat = ({ engagementId }: ScopingChatProps) => {
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const query = async (data: { question: string; overrideConfig?: any }) => {
     const response = await fetch(
@@ -99,15 +100,14 @@ export const ScopingChat = ({ engagementId }: ScopingChatProps) => {
     }
   };
 
+  // Auto-scroll to bottom when new messages are added
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
-    }
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isLoading]);
 
   return (
     <Card className="border-green-200 h-[600px] flex flex-col">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 flex-shrink-0">
         <CardTitle className="flex items-center gap-2 text-green-900">
           <MessageCircle className="h-5 w-5" />
           Scoping Assistant Chat
@@ -117,10 +117,10 @@ export const ScopingChat = ({ engagementId }: ScopingChatProps) => {
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="flex-1 flex flex-col p-4">
+      <CardContent className="flex-1 flex flex-col p-4 overflow-hidden">
         {/* Messages Area */}
-        <ScrollArea className="flex-1 pr-4 mb-4" ref={scrollAreaRef}>
-          <div className="space-y-4">
+        <ScrollArea className="flex-1 mb-4 h-0">
+          <div className="space-y-4 pr-4">
             {messages.length === 0 && (
               <div className="flex items-center justify-center h-32 text-gray-500">
                 <div className="text-center">
@@ -178,24 +178,28 @@ export const ScopingChat = ({ engagementId }: ScopingChatProps) => {
                 </div>
               </div>
             )}
+            
+            {/* Auto-scroll target */}
+            <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
 
         {/* Input Area */}
-        <div className="flex gap-2">
-          <Input
+        <div className="flex gap-2 flex-shrink-0">
+          <Textarea
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Ask about audit scoping, controls, or requirements..."
             disabled={isLoading}
-            className="flex-1"
+            className="flex-1 min-h-[40px] max-h-[120px] resize-y"
+            rows={2}
           />
           <Button
             onClick={handleSendMessage}
             disabled={isLoading || !inputMessage.trim()}
             size="sm"
-            className="gap-2"
+            className="gap-2 self-end"
           >
             <Send className="h-4 w-4" />
           </Button>
