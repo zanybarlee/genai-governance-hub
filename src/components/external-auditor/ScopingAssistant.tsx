@@ -116,11 +116,6 @@ export const ScopingAssistant = ({ engagementId }: ScopingAssistantProps) => {
         <ScopingChat engagementId={engagementId} />
       </div>
 
-      {/* Asset Mapping Section - Full Width */}
-      <div className="w-full">
-        <AssetMapping engagementId={engagementId} />
-      </div>
-
       {/* Document Analysis Section - Full Width */}
       <Card className="border-blue-200">
         <CardHeader className="pb-4">
@@ -230,6 +225,11 @@ export const ScopingAssistant = ({ engagementId }: ScopingAssistantProps) => {
           )}
         </CardContent>
       </Card>
+
+      {/* Asset Mapping Section - Full Width */}
+      <div className="w-full">
+        <AssetMapping engagementId={engagementId} />
+      </div>
     </div>
   );
 };
