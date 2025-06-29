@@ -2,7 +2,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Database, Server, Cloud, Upload, CheckCircle } from "lucide-react";
+import { Database, Server, Cloud, Upload, CheckCircle, Clock, AlertTriangle } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { useState } from "react";
 
 interface AssetMappingProps {
   engagementId: string;
@@ -16,11 +18,68 @@ interface AssetSummary {
 }
 
 export const AssetMapping = ({ engagementId }: AssetMappingProps) => {
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "processing" | "complete">("idle");
+
   const assetData: AssetSummary = {
     servers: 127,
     databases: 34,
     cloudPlatforms: ["Azure", "GCP", "Private Cloud"],
     totalAssets: 164
+  };
+
+  const handleUploadCMDB = () => {
+    setIsUploading(true);
+    setUploadStatus("uploading");
+    setUploadProgress(0);
+
+    const progressInterval = setInterval(() => {
+      setUploadProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          setUploadStatus("processing");
+          
+          // Simulate processing phase
+          setTimeout(() => {
+            setUploadStatus("complete");
+            setTimeout(() => {
+              setIsUploading(false);
+              setUploadProgress(0);
+              setUploadStatus("idle");
+            }, 2000);
+          }, 1500);
+          
+          return 100;
+        }
+        return prev + Math.random() * 15;
+      });
+    }, 200);
+  };
+
+  const getUploadStatusText = () => {
+    switch (uploadStatus) {
+      case "uploading":
+        return "Uploading CMDB export file...";
+      case "processing":
+        return "Processing and analyzing IT assets...";
+      case "complete":
+        return "CMDB analysis complete! Asset inventory updated.";
+      default:
+        return "";
+    }
+  };
+
+  const getStatusIcon = () => {
+    switch (uploadStatus) {
+      case "uploading":
+      case "processing":
+        return <Clock className="h-5 w-5 text-blue-600 animate-spin" />;
+      case "complete":
+        return <CheckCircle className="h-5 w-5 text-green-600" />;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -36,18 +95,36 @@ export const AssetMapping = ({ engagementId }: AssetMappingProps) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
+          {/* Upload Progress */}
+          {isUploading && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center gap-3 mb-3">
+                {getStatusIcon()}
+                <div>
+                  <p className="font-medium text-blue-900">CMDB Upload in Progress</p>
+                  <p className="text-sm text-blue-700">{getUploadStatusText()}</p>
+                </div>
+              </div>
+              {uploadStatus !== "complete" && (
+                <Progress value={uploadProgress} className="mb-2" />
+              )}
+            </div>
+          )}
+
           {/* Upload Status */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              <div>
-                <p className="font-medium text-green-900">CMDB Export Processed</p>
-                <p className="text-sm text-green-700">
-                  NeoPacific_CMDB_Export.csv successfully imported and analyzed
-                </p>
+          {!isUploading && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                <div>
+                  <p className="font-medium text-green-900">CMDB Export Processed</p>
+                  <p className="text-sm text-green-700">
+                    NeoPacific_CMDB_Export.csv successfully imported and analyzed
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Asset Summary */}
           <div className="grid grid-cols-3 gap-4">
@@ -93,9 +170,19 @@ export const AssetMapping = ({ engagementId }: AssetMappingProps) => {
 
           {/* Actions */}
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" className="gap-2">
-              <Upload className="h-4 w-4" />
-              Upload New CMDB
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="gap-2"
+              onClick={handleUploadCMDB}
+              disabled={isUploading}
+            >
+              {isUploading ? (
+                <Clock className="h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+              {isUploading ? "Processing..." : "Upload New CMDB"}
             </Button>
             <Button size="sm" variant="outline">
               Generate Asset Report
