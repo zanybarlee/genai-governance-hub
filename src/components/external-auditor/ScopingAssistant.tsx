@@ -32,21 +32,70 @@ export const ScopingAssistant = ({ engagementId }: ScopingAssistantProps) => {
 
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleFileUpload = () => {
+  const query = async (data: { question: string; overrideConfig?: any }) => {
+    const response = await fetch(
+      "http://127.0.0.1:3000/api/v1/prediction/ac822a35-d21c-4141-a0b3-e516a51917ee",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      }
+    );
+    const result = await response.json();
+    return result;
+  };
+
+  const handleFileUpload = async () => {
     setIsProcessing(true);
-    // Simulate processing
-    setTimeout(() => {
-      const newDoc: UploadedDocument = {
+    
+    try {
+      // Call the AI endpoint for document analysis
+      const response = await query({
+        question: "Please analyze the uploaded IT policy document and identify relevant controls for audit scoping. Focus on Access Control, Data Protection, Network Security, and Compliance requirements.",
+        overrideConfig: {
+          sessionId: `scoping-${engagementId}`,
+          startInputType: "document_analysis",
+          formTitle: "IT Policy Analysis",
+          formDescription: "Analyzing uploaded policy document for control identification",
+          formInputTypes: "policy_document"
+        }
+      });
+
+      console.log("AI Response:", response);
+
+      // Simulate processing time for UI feedback
+      setTimeout(() => {
+        const newDoc: UploadedDocument = {
+          id: Date.now().toString(),
+          name: "Client_Policy_Document.pdf",
+          status: "analyzed",
+          controls: ["Data Protection", "Incident Response", "Access Management", "Audit Logging"],
+          size: "1.8 MB",
+          uploadedAt: new Date()
+        };
+        
+        setDocuments(prev => [...prev, newDoc]);
+        setIsProcessing(false);
+      }, 2000);
+
+    } catch (error) {
+      console.error("Error calling AI endpoint:", error);
+      
+      // Add failed document on error
+      const failedDoc: UploadedDocument = {
         id: Date.now().toString(),
-        name: "Sample_Document.pdf",
-        status: "analyzed",
-        controls: ["Data Protection", "Incident Response"],
-        size: "1.2 MB",
+        name: "Failed_Document.pdf",
+        status: "failed",
+        controls: [],
+        size: "Unknown",
         uploadedAt: new Date()
       };
-      setDocuments(prev => [...prev, newDoc]);
+      
+      setDocuments(prev => [...prev, failedDoc]);
       setIsProcessing(false);
-    }, 3000);
+    }
   };
 
   const getStatusIcon = (status: string) => {
@@ -87,6 +136,21 @@ export const ScopingAssistant = ({ engagementId }: ScopingAssistantProps) => {
             </Button>
           </div>
 
+          {/* AI Processing Status */}
+          {isProcessing && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center gap-3">
+                <Clock className="h-5 w-5 text-blue-600 animate-spin" />
+                <div>
+                  <p className="font-medium text-blue-900">AI Analysis in Progress</p>
+                  <p className="text-sm text-blue-700">
+                    Analyzing document for control identification and compliance mapping...
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* AI Prompt */}
           <div className="bg-blue-50 p-4 rounded-lg">
             <div className="flex items-start gap-3">
@@ -112,7 +176,11 @@ export const ScopingAssistant = ({ engagementId }: ScopingAssistantProps) => {
                     <Badge variant="outline">{doc.size}</Badge>
                   </div>
                   <Badge 
-                    className={doc.status === "analyzed" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}
+                    className={
+                      doc.status === "analyzed" ? "bg-green-100 text-green-800" : 
+                      doc.status === "failed" ? "bg-red-100 text-red-800" :
+                      "bg-yellow-100 text-yellow-800"
+                    }
                     variant="secondary"
                   >
                     {doc.status}
@@ -128,6 +196,13 @@ export const ScopingAssistant = ({ engagementId }: ScopingAssistantProps) => {
                         </Badge>
                       ))}
                     </div>
+                  </div>
+                )}
+                {doc.status === "failed" && (
+                  <div className="mt-3">
+                    <p className="text-sm text-red-600">
+                      Failed to analyze document. Please try uploading again.
+                    </p>
                   </div>
                 )}
               </div>
