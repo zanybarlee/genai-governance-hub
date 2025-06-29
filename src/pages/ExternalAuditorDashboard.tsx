@@ -50,76 +50,74 @@ const ExternalAuditorDashboard = () => {
   });
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gray-50">
-        <AppSidebar />
-        <SidebarInset>
-          <Header />
-          <main className="flex-1 p-4">
-            <div className="mx-auto max-w-7xl w-full">
-              {/* Header */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h1 className="text-2xl font-bold text-gray-900">External Audit Dashboard</h1>
-                    <p className="text-gray-600 text-sm">
-                      {selectedEngagement.client} • {selectedEngagement.framework} • 2025 Annual Audit
-                    </p>
-                  </div>
-                  <EngagementSelector selectedEngagement={selectedEngagement} onEngagementChange={setSelectedEngagement} />
+      <AppSidebar />
+      <SidebarInset className="flex flex-col">
+        <Header />
+        <main className="flex-1 p-4 bg-gray-50">
+          <div className="mx-auto max-w-7xl w-full">
+            {/* Header */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">External Audit Dashboard</h1>
+                  <p className="text-gray-600 text-sm">
+                    {selectedEngagement.client} • {selectedEngagement.framework} • 2025 Annual Audit
+                  </p>
                 </div>
+                <EngagementSelector selectedEngagement={selectedEngagement} onEngagementChange={setSelectedEngagement} />
               </div>
-
-              {/* Engagement Overview - Always Visible */}
-              <div className="mb-6">
-                <EngagementOverview engagement={selectedEngagement} />
-              </div>
-
-              {/* Tab Navigation */}
-              <Tabs defaultValue="planning" className="space-y-6">
-                <TabsList className="grid w-full grid-cols-5">
-                  <TabsTrigger value="planning">Planning & Scoping</TabsTrigger>
-                  <TabsTrigger value="evidence">Evidence Collection</TabsTrigger>
-                  <TabsTrigger value="analysis">Analysis & Insights</TabsTrigger>
-                  <TabsTrigger value="remediation">Remediation</TabsTrigger>
-                  <TabsTrigger value="reporting">Reporting</TabsTrigger>
-                </TabsList>
-
-                {/* Planning & Scoping Tab */}
-                <TabsContent value="planning" className="space-y-6">
-                  <ScopingAssistant engagementId={selectedEngagement.id} />
-                  <ComplianceCoverageWheel engagement={selectedEngagement} />
-                </TabsContent>
-
-                {/* Evidence Collection Tab */}
-                <TabsContent value="evidence" className="space-y-6">
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                    <EvidenceCollection engagementId={selectedEngagement.id} />
-                    <ArtifactTracker engagementId={selectedEngagement.id} />
-                  </div>
-                </TabsContent>
-
-                {/* Analysis & Insights Tab */}
-                <TabsContent value="analysis" className="space-y-6">
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                    <GapDetection engagementId={selectedEngagement.id} />
-                    <AuditInsightsWidget engagementId={selectedEngagement.id} />
-                  </div>
-                </TabsContent>
-
-                {/* Remediation Tab */}
-                <TabsContent value="remediation" className="space-y-6">
-                  <RemediationDashboard engagementId={selectedEngagement.id} />
-                </TabsContent>
-
-                {/* Reporting Tab */}
-                <TabsContent value="reporting" className="space-y-6">
-                  <ExecutiveReportGenerator engagementId={selectedEngagement.id} clientName={selectedEngagement.client} />
-                </TabsContent>
-              </Tabs>
             </div>
-          </main>
-        </SidebarInset>
-      </div>
+
+            {/* Engagement Overview - Always Visible */}
+            <div className="mb-6">
+              <EngagementOverview engagement={selectedEngagement} />
+            </div>
+
+            {/* Tab Navigation */}
+            <Tabs defaultValue="planning" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-5">
+                <TabsTrigger value="planning">Planning & Scoping</TabsTrigger>
+                <TabsTrigger value="evidence">Evidence Collection</TabsTrigger>
+                <TabsTrigger value="analysis">Analysis & Insights</TabsTrigger>
+                <TabsTrigger value="remediation">Remediation</TabsTrigger>
+                <TabsTrigger value="reporting">Reporting</TabsTrigger>
+              </TabsList>
+
+              {/* Planning & Scoping Tab */}
+              <TabsContent value="planning" className="space-y-6">
+                <ScopingAssistant engagementId={selectedEngagement.id} />
+                <ComplianceCoverageWheel engagement={selectedEngagement} />
+              </TabsContent>
+
+              {/* Evidence Collection Tab */}
+              <TabsContent value="evidence" className="space-y-6">
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                  <EvidenceCollection engagementId={selectedEngagement.id} />
+                  <ArtifactTracker engagementId={selectedEngagement.id} />
+                </div>
+              </TabsContent>
+
+              {/* Analysis & Insights Tab */}
+              <TabsContent value="analysis" className="space-y-6">
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                  <GapDetection engagementId={selectedEngagement.id} />
+                  <AuditInsightsWidget engagementId={selectedEngagement.id} />
+                </div>
+              </TabsContent>
+
+              {/* Remediation Tab */}
+              <TabsContent value="remediation" className="space-y-6">
+                <RemediationDashboard engagementId={selectedEngagement.id} />
+              </TabsContent>
+
+              {/* Reporting Tab */}
+              <TabsContent value="reporting" className="space-y-6">
+                <ExecutiveReportGenerator engagementId={selectedEngagement.id} clientName={selectedEngagement.client} />
+              </TabsContent>
+            </Tabs>
+          </div>
+        </main>
+      </SidebarInset>
     </SidebarProvider>
   );
 };
