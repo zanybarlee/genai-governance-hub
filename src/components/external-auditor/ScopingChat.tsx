@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -110,7 +109,7 @@ export const ScopingChat = ({ engagementId }: ScopingChatProps) => {
       <CardHeader className="pb-3 flex-shrink-0">
         <CardTitle className="flex items-center gap-2 text-green-900">
           <MessageCircle className="h-5 w-5" />
-          Scoping Assistant Chat
+          AI Scoping Assistant
         </CardTitle>
         <CardDescription>
           Interactive conversation for audit planning and scoping guidance
