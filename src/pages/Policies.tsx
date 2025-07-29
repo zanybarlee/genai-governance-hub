@@ -103,7 +103,7 @@ const Policies = () => {
 
   const filteredPolicies = policies.filter((policy) =>
     policy.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    policy.category.toLowerCase().includes(searchQuery.toLowerCase())
+    policy.category?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
